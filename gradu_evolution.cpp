@@ -101,7 +101,7 @@ int main()
             }
         }
 
-        cout << endl <<i << "/" << n_ite << endl;
+        cout << i << "/" << n_ite << endl;
 
         //Write rms values in gnu files
         rmsFile << i*Dt << " " << sqrt(r_rms/NA) << " " << sqrt(p_rms/NA) << endl;
