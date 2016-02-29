@@ -10,19 +10,22 @@
 #include <fstream>
 using namespace std;
 
-//Phase coordinates generator
+//Phase coordinates generator functions
 double alea();
-vector<vector<double> > sphere(double radius_max, unsigned int nbr_points);
-void write(string const nomFichier, vector<vector<double> > &data);
+void sphere(vector<vector<double> > &r, double radius_max);
 
-//Evolution
-void read(string const nomFichier, vector<vector<double> > &data);
+//Write and read functions
+void write(vector<vector<double> > &data, string const nomFichier);
+void read(vector<vector<double> > &data, string const nomFichier);
+
+//Useful functions
 double module(vector<double> &r_real, vector<double> &r_box);
 double gaussian(vector<double> &r_real, vector<double> &r_box, double sigma);
 int key(int x, int y, int z, int N);
-void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma, double L, int box_size, int N);
 double U(double rho);
+
+//Evolution functions
+void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma, double L, int box_size, int N);
 vector<double> minus_gradU(vector<double> &r, vector<double> &rho_map, double nbr_sigma, int N, double L, double sigma);
-vector<double> minus_gradU2(vector<double> &r, vector<double> &rho_map, double nbr_sigma, int N, double L, double sigma);
 
 #endif

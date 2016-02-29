@@ -12,31 +12,30 @@ double alea()
     return (double)rand()/RAND_MAX;
 }
 
-vector<vector<double> > sphere(double radius_max, unsigned int nbr_points)
+void sphere(vector<vector<double> > &r, double radius_max)
 {
     double radius, theta, phi;
-    vector<vector<double> > cart_coords(nbr_points, vector<double>(3));
+    int nbr_points = r.size();
 
-    for(unsigned int i=0 ; i<nbr_points ; i++)
+    for(int i=0 ; i<nbr_points ; i++)
     {
         radius = radius_max*pow(alea(),1./3);
         theta = acos(1-2*alea());
         phi= 2*M_PI*alea();
-        cart_coords[i][0] = radius*sin(theta)*cos(phi);
-        cart_coords[i][1] = radius*sin(theta)*sin(phi);
-        cart_coords[i][2] = radius*cos(theta);
+        r[i][0] = radius*sin(theta)*cos(phi);
+        r[i][1] = radius*sin(theta)*sin(phi);
+        r[i][2] = radius*cos(theta);
     }
-
-    return cart_coords;
 }
 
-void write(string const nomFichier, vector<vector<double> > &data)
+void write(vector<vector<double> > &data, string const nomFichier)
 {
     ofstream monFlux(nomFichier.c_str());
-    unsigned int data_size = data.size();
+    int data_size = data.size();
+
     if(monFlux)
     {
-        for(unsigned int i=0 ; i<data_size ; i++)
+        for(int i=0 ; i<data_size ; i++)
         {
             monFlux << data[i][0] << " " << data[i][1] << " " << data[i][2] << endl;
         }
@@ -47,42 +46,21 @@ void write(string const nomFichier, vector<vector<double> > &data)
     }
 }
 
-void read(string const nomFichier, vector<vector<double> > &data)
+void read(vector<vector<double> > &data, string const nomFichier)
 {
     ifstream monFlux(nomFichier.c_str());
     vector<double> r(3);
+
     while(monFlux >> r[0] >> r[1] >> r[2])
     {
         data.push_back(r);
     }
 }
 
-/* Classical particle
-double rho(double N, double L)
-{
-    double density = 0;
-    double omega[3];
-    omega[0] = 0.25;
-    omega[1] = 0.5;
-    omega[2] = 0.25;
-    for(int i=-1 ; i<=1 ; i++)
-    {
-        for(int j=-1 ; j<=1 ; j++)
-        {
-            for(int k=-1 ; k<=1 ; k++)
-            {
-                density += omega[i+1]*omega[j+1]*omega[k+1]*;
-            }
-        }
-    }
-    return 1./N/L/L/L*
-}
-*/
-
 double module(vector<double> &r_real, vector<double> &r_box)
 {
     double sqr_sum = 0;
-    for(unsigned int i=0 ; i<3 ; i++)
+    for(int i=0 ; i<3 ; i++)
     {
         sqr_sum += (r_real[i] - r_box[i]) * (r_real[i] - r_box[i]);
     }
@@ -98,6 +76,13 @@ double gaussian(vector<double> &r_real, vector<double> &r_box, double sigma)
 int key(int x, int y, int z, int N)
 {
     return x*N*N + y*N + z;
+}
+
+double U(double rho)
+{
+    double r0 = 1.12; //fm
+    double rho0 = 3./4/M_PI/pow(r0,3); //fm-3
+    return -356*rho/rho0 + 303*pow(rho/rho0,7./6);
 }
 
 void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma, double L, int box_size, int N)
@@ -125,13 +110,6 @@ void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma,
             }
         }
     }
-}
-
-double U(double rho)
-{
-    double r0 = 1.12; //fm
-    double rho0 = 3./4/M_PI/pow(r0,3); //fm-3
-    return -356*rho/rho0 + 303*pow(rho/rho0,7./6);
 }
 
 vector<double> minus_gradU(vector<double> &r, vector<double> &rho_map, double nbr_sigma, int N, double L, double sigma)

@@ -11,9 +11,6 @@ using namespace std;
 
 int main()
 {
-    //Initialize random generator
-    srand(time(NULL));
-
     //Initialize some constants
     double m_proton = 938.3; //MeV
     double m_neutron = 939.6; //MeV
@@ -25,50 +22,46 @@ int main()
     //Initialize positions and momenta values
     vector<vector<double> > r;
     vector<vector<double> > p;
-    read("coords.gnu", r);
-    read("momenta.gnu", p);
+    read(r, "coords.gnu");
+    read(p, "momenta.gnu");
 
     //Initialize strength
-    unsigned int NA = r.size();
+    int NA = r.size();
     vector<vector<double> > F(NA, vector<double>(3,0));
-    for(unsigned int i=0 ; i<NA ; i++)
+    for(int i=0 ; i<NA ; i++)
     {
-        for(unsigned int j=0 ; j<3 ; j++)
+        for(int j=0 ; j<3 ; j++)
         {
             F[i][j] = -m*omega*omega*r[i][j];
         }
     }
 
     // Initialize useful variables
-    unsigned int n_ite = 1000;
+    int n_ite = 1000;
     double r_modulus;
     double p_modulus;
-    double rms;
-    double total_momentum[3];
+    double r_rms;
+    double p_rms;
 
     //Open file to write results
-    ofstream particleFile("one_particle_oscillation.gnu");
+    ofstream partFile("particle.gnu");
     ofstream rmsFile("rms.gnu");
-    ofstream momentumConsFile("momentum_cons.gnu");
 
-    for(unsigned int i=0 ; i<n_ite ; i++)
+    for(int i=0 ; i<n_ite ; i++)
     {
-        //Initialize RMS and total momentum
-        rms = 0;
-        for(unsigned int j=0 ; j<3 ; j++)
-        {
-            total_momentum[j] = 0;
-        }
+        //Initialize r and p rms
+        r_rms = 0;
+        p_rms = 0;
 
         //Loop over all test particles
-        for(unsigned int j=0 ; j<NA ; j++)
+        for(int j=0 ; j<NA ; j++)
         {
             //Initialize r and p modulus value
             r_modulus = 0;
             p_modulus = 0;
 
             //Loop over cartesian coordinates
-            for(unsigned int k=0 ; k<3 ; k++)
+            for(int k=0 ; k<3 ; k++)
             {
                 //Differential system resolution
                 p[j][k] += 1./2*F[j][k]*Dt;
@@ -77,11 +70,11 @@ int main()
                 p[j][k] += 1./2*F[j][k]*Dt;
 
                 //Rms and total momentum calculation
-                rms += r[j][k]*r[j][k];
-                total_momentum[k] += p[j][k];
+                r_rms += r[j][k]*r[j][k];
+                p_rms += p[j][k]*p[j][k];
 
                 //For one test particle
-                if(j==1)
+                if(j==2)
                 {
                     r_modulus += r[j][k]*r[j][k];
                     p_modulus += p[j][k]*p[j][k];
@@ -89,20 +82,19 @@ int main()
             }
 
             //Write modulus of one test particle
-            if(j==1)
+            if(j==2)
             {
-                particleFile << i*Dt << " " << sqrt(r_modulus) << " " << sqrt(p_modulus) << endl;
+                partFile << i*Dt << " " << sqrt(r_modulus) << " " << sqrt(p_modulus) << endl;
             }
         }
 
-        //Write rms and momenta values in gnu files
-        rmsFile << sqrt(rms/NA) << endl;
-        momentumConsFile << total_momentum[0] << " " << total_momentum[1] << " " << total_momentum[2] << endl;
+        //Write r and p rms
+        rmsFile << i*Dt << " " << sqrt(r_rms/NA) << " " << sqrt(p_rms/NA) << endl;
     }
 
     //Write the coordinates and momenta results in gnu files
-    write("after_coords.gnu", r);
-    write("after_momenta.gnu", p);
+    write(r, "after_coords.gnu");
+    write(p, "after_momenta.gnu");
 
     return 0;
 }

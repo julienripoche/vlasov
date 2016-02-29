@@ -21,37 +21,36 @@ int main()
     //Initialize positions and momenta values
     vector<vector<double> > r;
     vector<vector<double> > p;
-    read("coords.gnu", r);
-    read("momenta.gnu", p);
-
-    //Initialize strength
-    int NA = r.size();
-    vector<vector<double> > F(NA, vector<double>(3,0)); 
+    read(r, "coords.gnu");
+    read(p, "momenta.gnu");
 
     //Initialize rho map
     int n = 30;
     vector<double> rho(n*n*n,0);
     rho_map(rho, r, 1., 20, n, 5);
 
+    //Initialize strength
+    int NA = r.size();
+    vector<vector<double> > F(NA, vector<double>(3,0));
     for(int i=0 ; i<NA ; i++)
     {
         F[i] = minus_gradU(r[i], rho, 2, n, 20, 1.);
     }
 
     // Initialize useful variables
-    int n_ite = 100;
+    int n_ite = 10;
     double r_modulus;
     double p_modulus;
     double r_rms;
     double p_rms;
 
     //Open file to write results
-    ofstream particleFile("one_particle_oscillation.gnu");
+    ofstream partFile("particle.gnu");
     ofstream rmsFile("rms.gnu");
 
     for(int i=0 ; i<n_ite ; i++)
     {
-        //Initialize rms
+        //Initialize r and p rms
         r_rms = 0;
         p_rms = 0;
 
@@ -97,10 +96,11 @@ int main()
             //Write modulus of one test particle
             if(j==1)
             {
-                particleFile << i*Dt << " " << sqrt(r_modulus) << " " << sqrt(p_modulus) << endl;
+                partFile << i*Dt << " " << sqrt(r_modulus) << " " << sqrt(p_modulus) << endl;
             }
         }
 
+        //To follow the progession of the evolution
         cout << i << "/" << n_ite << endl;
 
         //Write rms values in gnu files
@@ -108,8 +108,8 @@ int main()
     }
 
     //Write the coordinates and momenta results in gnu files
-    write("after_coords.gnu", r);
-    write("after_momenta.gnu", p);
+    write(r, "after_coords.gnu");
+    write(p, "after_momenta.gnu");
 
     return 0;
 }
