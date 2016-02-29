@@ -57,60 +57,115 @@ void read(string const nomFichier, vector<vector<double> > &data)
     }
 }
 
-double module(vector<double> coords)
+/* Classical particle
+double rho(double N, double L)
+{
+    double density = 0;
+    double omega[3];
+    omega[0] = 0.25;
+    omega[1] = 0.5;
+    omega[2] = 0.25;
+    for(int i=-1 ; i<=1 ; i++)
+    {
+        for(int j=-1 ; j<=1 ; j++)
+        {
+            for(int k=-1 ; k<=1 ; k++)
+            {
+                density += omega[i+1]*omega[j+1]*omega[k+1]*;
+            }
+        }
+    }
+    return 1./N/L/L/L*
+}
+*/
+
+double module(vector<double> &r_real, vector<double> &r_box)
 {
     double sqr_sum = 0;
-    for(int i=0 ; i<3 ; i++)
+    for(unsigned int i=0 ; i<3 ; i++)
     {
-        sqr_sum += coords[i]*coords[i];
+        sqr_sum += (r_real[i] - r_box[i]) * (r_real[i] - r_box[i]);
     }
     return sqrt(sqr_sum);
 }
 
-double gaussian(vector<double> coords, double sigma)
+double gaussian(vector<double> &r_real, vector<double> &r_box, double sigma)
 {
-    double modulus = module(coords);
-    return 1/pow(sqrt(2*M_PI)*sigma,3)*exp(-modulus*modulus/2/sigma/sigma);
+    double r = module(r_real, r_box);
+    return 1/pow(sqrt(2*M_PI)*sigma,3)*exp(-r*r/2/sigma/sigma);
 }
 
-vector<double> gradU(vector<double> coords)
+unsigned int key(unsigned int x, unsigned int y, unsigned int z, unsigned int N)
+{
+    return x*N*N + y*N + z;
+}
+
+void rho_map(vector<double> rho, vector<vector<double> > &coords, double sigma, unsigned int box_size)
+{
+    unsigned int NA = coords.size();
+    vector<double> r(3);
+    //vector<double> rho(box_size*box_size*box_size,0);
+    for(unsigned int x=0 ; x<box_size ; x++)
+    {
+        cout << x << "/" << box_size << endl;
+        r[0] = x;
+        for(unsigned int y=0 ; y<box_size ; y++)
+        {
+            r[1] = y;
+            for(unsigned int z=0 ; z<box_size ; z++)
+            {
+                r[2] = z;
+                for(unsigned int i=0 ; i<NA ; i++)
+                {
+                    rho[key(x,y,z,box_size)] += gaussian(coords[i], r, sigma);
+                }
+            }
+        }
+    }
+    //return rho;
+}
+
+double U(double rho)
+{
+    double r0 = 1.12; //fm
+    double rho0 = 3./4/M_PI/pow(r0,3); //fm-3
+    return -356*rho/rho0 + 303*pow(rho/rho0,7./6);
+}
+
+vector<double> minus_gradU(vector<double> &coords, vector<double> &rho_map, double nbr_sigma, int N, double L, double sigma)
 {
     //nbr_sigma sigma L U have to be arguments
-    unsigned int nbr_sigma = 3;
-    double L = 5;
-    unsigned int N = 100;
     double l0 = L/N;
-    double sigma = 0.05;
     double gaus;
-    double U = -356.+303;
-    double box_coords[3];
-    vector<double> position_difference(3);
+    double rho;
+    double box_init[3];
+    vector<double> box(3);
+    vector<double> p(3);
     vector<double> gradu(3,0);
     int nbr_cells = floor(nbr_sigma*sigma/l0);
 
     //Initialize box coordinates
     for(int i=0 ; i<3 ; i++)
     {
-        box_coords[i] = floor(coords[i]/l0) + 0.5;
-        cout << coords[i] << " " << box_coords[i] << endl;
+        box_init[i] = (floor(coords[i]/l0) + 0.5)*l0;
     }
 
     //Loop over considered cells
     for(int x=-nbr_cells ; x<=nbr_cells ; x++)
     {
-        position_difference[0] = coords[0] - (x + box_coords[0])*l0;
+        box[0] = box_init[0] + x*l0;
         for(int y=-nbr_cells ; y<=nbr_cells ; y++)
         {
-            position_difference[1] = coords[1] - (y + box_coords[1])*l0;
+            box[1] = box_init[1] + y*l0;
             for(int z=-nbr_cells ; z<=nbr_cells ; z++)
             {
-                position_difference[2] = coords[2] - (z + box_coords[2])*l0;
-
-                gaus = gaussian(position_difference, sigma);
+                box[2] = box_init[2] + z*l0;
+                gaus = gaussian(coords, box, sigma);
 
                 for(int i=0 ; i<3 ; i++)
                 {
-                    gradu[i] += position_difference[i]*gaus*U;
+                    rho = rho_map[key(x,y,z,N)];
+                    gradu[i] += (coords[i] - box[i]) * gaus * U(rho);
                 }
             }
         }
@@ -118,10 +173,9 @@ vector<double> gradU(vector<double> coords)
 
     for(int i=0 ; i<3 ; i++)
     {
-        gradu[i] *= -l0*l0*l0/sigma/sigma;
+        gradu[i] *= l0*l0*l0/sigma/sigma;
     }
 
     return gradu;
 }
-
 
