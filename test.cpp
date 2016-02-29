@@ -5,48 +5,56 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
-//#include "functions.h"
+#include "functions.h"
 
 using namespace std;
 
-void dfunction(vector<vector<int> > &vi)
-{
-    vector<int> vect(2,3);
-    vi.push_back(vect);
-    vi.push_back(vect);
-    vi.push_back(vect);
-    vi.push_back(vect);
-    vi.push_back(vect);
-}
-
-
-void ma_fonction(vector<int> &vi)
-{
-    vi.push_back(12);
-}
-
 int main()
 {
-    vector<int> vect(2,3);
-    ma_fonction(vect);
-    ma_fonction(vect);
-    ma_fonction(vect);
-    for(unsigned int i=0 ; i<vect.size() ; i++)
-    {
-        cout << vect[i] << endl;
-    }
+    //Initialize random generator
+    srand(time(NULL));
 
-    cout << "2d" << endl;
+    //Initialize positions and momenta values
+    vector<vector<double> > r;
+    vector<vector<double> > p;
+    read("coords.gnu", r);
+    read("momenta.gnu", p);
 
-    vector<vector<int> > vvv;
-    vvv.push_back(vect);
-    dfunction(vvv);
-    for(unsigned int i=0 ; i<vvv.size() ; i++)
+    unsigned int n = 30;
+
+    //Initialize strength
+    unsigned int NA = r.size();
+    vector<vector<double> > F(NA, vector<double>(3,0)); 
+    vector<double> rho(n*n*n,0);
+
+    rho_map(rho, r, 1., 20, 30);
+
+    double sum;
+ 
+    ofstream densityFile("density.gnu");
+    for(unsigned int i=0 ; i<n ; i++)
     {
-        for(unsigned int j=0 ; j<vvv[i].size() ; j++)
+        for(unsigned int j=0 ; j<n ; j++)
         {
-            cout << vvv[i][j] << " ";
+            densityFile << i << " " << j << " " << rho[key(i,j,n/2,n)] << endl;
         }
-        cout << endl;
     }
+
+    cout << "aaa" << endl;
+
+    //for(unsigned int i=0 ; i<NA ; i++)
+    //{
+    cout << r[1119][2] << endl;
+
+    vector<double> truc(3,0);
+    F[0] = truc;
+
+    cout << "0 value" << endl;
+
+    F[0] = minus_gradU2(r[0], rho, 2, n, 20, 0.4);
+    //}
+
+    cout << "bbb" << endl;
+
+    return 0;
 }

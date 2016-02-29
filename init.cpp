@@ -17,7 +17,7 @@ int main()
     double rho0 = 3./4/M_PI/pow(r0,3); //fm-3
     double pf = pow(3./2*M_PI*M_PI*rho0,1./3); //fm-1
     unsigned int A = 56;
-    unsigned int N = 20;
+    unsigned int N = 5;
     unsigned int NA = N*A;
     double r = r0 * pow(A,1./3);
 

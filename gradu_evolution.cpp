@@ -35,9 +35,11 @@ int main()
 
     cout << "aaa" << endl;
 
+    vector<double> truc(3);
     for(unsigned int i=0 ; i<NA ; i++)
     {
-        F[i] = minus_gradU(r[i], rho, 2, 50, 20, 0.4);
+        F[i] = truc;
+        //F[i] = minus_gradU(r[i], rho, 2, 50, 20, 0.4);
     }
 
     cout << "bbb" << endl;
