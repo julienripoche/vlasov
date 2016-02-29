@@ -17,21 +17,20 @@ int main()
     read("coords.gnu", r);
     read("momenta.gnu", p);
 
-    unsigned int n = 30;
-
-    //Initialize strength
-    unsigned int NA = r.size();
-    vector<vector<double> > F(NA, vector<double>(3,0)); 
+    //Initialize rho map
+    int n = 30;
     vector<double> rho(n*n*n,0);
+    rho_map(rho, r, 1., 20, 30);
 
-    rho_map(rho, r, 1., 20, 30, 5);
-
-    //for(unsigned int i=0 ; i<NA ; i++)
-    //{
-        F[0] = minus_gradU(r[0], rho, 2, n, 20, 0.4);
-    //}
-
-    cout << F[0][0] << " " << F[0][1] << " " << F[0][2] << endl;
+    //Write density profile in "density.gnu" 
+    ofstream densityFile("density.gnu");
+    for(int i=0 ; i<n ; i++)
+    {
+        for(int j=0 ; j<n ; j++)
+        {
+            densityFile << i << " " << j << " " << rho[key(i,j,n/2,n)] << endl;
+        }
+    }
 
     return 0;
 }

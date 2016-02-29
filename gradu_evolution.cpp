@@ -11,9 +11,6 @@ using namespace std;
 
 int main()
 {
-    //Initialize random generator
-    srand(time(NULL));
-
     //Initialize some constants
     double m_proton = 938.3; //MeV
     double m_neutron = 939.6; //MeV
@@ -28,24 +25,21 @@ int main()
     read("momenta.gnu", p);
 
     //Initialize strength
-    unsigned int NA = r.size();
+    int NA = r.size();
     vector<vector<double> > F(NA, vector<double>(3,0)); 
-    vector<double> rho(1000000);
-    rho_map(rho, r, 0.4, 50);
 
-    cout << "aaa" << endl;
+    //Initialize rho map
+    int n = 30;
+    vector<double> rho(n*n*n,0);
+    rho_map(rho, r, 1., 20, n, 5);
 
-    vector<double> truc(3);
-    for(unsigned int i=0 ; i<NA ; i++)
+    for(int i=0 ; i<NA ; i++)
     {
-        F[i] = truc;
-        //F[i] = minus_gradU(r[i], rho, 2, 50, 20, 0.4);
+        F[i] = minus_gradU(r[i], rho, 2, n, 20, 1.);
     }
 
-    cout << "bbb" << endl;
-
     // Initialize useful variables
-    unsigned int n_ite = 150;
+    int n_ite = 100;
     double r_modulus;
     double p_modulus;
     double r_rms;
@@ -55,23 +49,21 @@ int main()
     ofstream particleFile("one_particle_oscillation.gnu");
     ofstream rmsFile("rms.gnu");
 
-    cout << "ccc" << endl;
-
-    for(unsigned int i=0 ; i<n_ite ; i++)
+    for(int i=0 ; i<n_ite ; i++)
     {
         //Initialize rms
         r_rms = 0;
         p_rms = 0;
 
         //Loop over all test particles
-        for(unsigned int j=0 ; j<NA ; j++)
+        for(int j=0 ; j<NA ; j++)
         {
             //Initialize r and p modulus value
             r_modulus = 0;
             p_modulus = 0;
 
             //Loop over cartesian coordinates
-            for(unsigned int k=0 ; k<3 ; k++)
+            for(int k=0 ; k<3 ; k++)
             {
                 //Differential system resolution
                 p[j][k] += 1./2*F[j][k]*Dt;
@@ -79,17 +71,14 @@ int main()
             }
         }
 
-        cout << "ddd" << " ";
+        rho_map(rho, r, 1., 20, n, 5);
 
-        rho_map(rho, r, 0.2, 100);
-
-        for(unsigned int j=0 ; j<NA ; j++)
+        for(int j=0 ; j<NA ; j++)
         {
-
-            F[j] = minus_gradU(r[j], rho, 2, 100, 5, 0.05);
+            F[j] = minus_gradU(r[j], rho, 2, n, 20, 1.);
 
             //Loop over cartesian coordinates
-            for(unsigned int k=0 ; k<3 ; k++)
+            for(int k=0 ; k<3 ; k++)
             { 
                 p[j][k] += 1./2*F[j][k]*Dt;
 
@@ -112,7 +101,7 @@ int main()
             }
         }
 
-        cout << i << "/" << n_ite << endl;
+        cout << endl <<i << "/" << n_ite << endl;
 
         //Write rms values in gnu files
         rmsFile << i*Dt << " " << sqrt(r_rms/NA) << " " << sqrt(p_rms/NA) << endl;
