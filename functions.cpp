@@ -100,16 +100,16 @@ unsigned int key(unsigned int x, unsigned int y, unsigned int z, unsigned int N)
     return x*N*N + y*N + z;
 }
 
-void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma,double L, unsigned int box_size)
+void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma, double L, int box_size)
 {
-    unsigned int NA = coords.size();
+    int NA = coords.size();
     double l0 = double(L)/box_size;
     cout << "l0 = " << l0 << endl;
     vector<double> r(3);
-    for(unsigned int x=0 ; x<box_size ; x++)
+    for(int x=0 ; x<box_size ; x++)
     {
         r[0] = (x-box_size/2.)*l0;
-        for(unsigned int y=0 ; y<box_size ; y++)
+        for(int y=0 ; y<box_size ; y++)
         {
             r[1] = (y-box_size/2.)*l0;
             for(unsigned int z=0 ; z<box_size ; z++)
