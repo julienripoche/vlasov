@@ -38,7 +38,7 @@ int main()
     }
 
     // Initialize useful variables
-    int n_ite = 10;
+    int n_ite = 200;
     double r_modulus;
     double p_modulus;
     double r_rms;
