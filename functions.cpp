@@ -57,6 +57,11 @@ void read(vector<vector<double> > &data, string const nomFichier)
     }
 }
 
+int key(int x, int y, int z, int N)
+{
+    return x*N*N + y*N + z;
+}
+
 double module(vector<double> &r_real, vector<double> &r_box)
 {
     double sqr_sum = 0;
@@ -71,11 +76,6 @@ double gaussian(vector<double> &r_real, vector<double> &r_box, double sigma)
 {
     double r = module(r_real, r_box);
     return 1/pow(sqrt(2*M_PI)*sigma,3)*exp(-r*r/2/sigma/sigma);
-}
-
-int key(int x, int y, int z, int N)
-{
-    return x*N*N + y*N + z;
 }
 
 double U(double rho)
@@ -112,7 +112,7 @@ void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma,
     }
 }
 
-vector<double> minus_gradU(vector<double> &r, vector<double> &rho_map, double nbr_sigma, int N, double L, double sigma)
+void minus_gradU(vector<double> &gradu, vector<double> &r, vector<double> &rho_map, double nbr_sigma, int N, double L, double sigma)
 {
     //Define some useful variables
     double l0 = L/N;
@@ -120,7 +120,6 @@ vector<double> minus_gradU(vector<double> &r, vector<double> &rho_map, double nb
     double rho;
     int box_init[3];
     vector<double> box(3);
-    vector<double> gradu(3,0);
     int nbr_cells = floor(nbr_sigma*sigma/l0);
 
     int x1, y1, z1;
@@ -130,6 +129,7 @@ vector<double> minus_gradU(vector<double> &r, vector<double> &rho_map, double nb
     {
         //box_init[i] = (floor(r[i]/l0) + 0.5)*l0;
         box_init[i] = floor(r[i]/l0);
+        gradu[i] = 0;
     }
 
     //Loop over considered cells
@@ -168,7 +168,5 @@ vector<double> minus_gradU(vector<double> &r, vector<double> &rho_map, double nb
     {
         gradu[i] *= l0*l0*l0/sigma/sigma;
     }
-
-    return gradu;
 }
 

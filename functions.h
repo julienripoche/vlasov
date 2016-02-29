@@ -19,13 +19,13 @@ void write(vector<vector<double> > &data, string const nomFichier);
 void read(vector<vector<double> > &data, string const nomFichier);
 
 //Useful functions
+int key(int x, int y, int z, int N);
 double module(vector<double> &r_real, vector<double> &r_box);
 double gaussian(vector<double> &r_real, vector<double> &r_box, double sigma);
-int key(int x, int y, int z, int N);
 double U(double rho);
 
 //Evolution functions
 void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma, double L, int box_size, int N);
-vector<double> minus_gradU(vector<double> &r, vector<double> &rho_map, double nbr_sigma, int N, double L, double sigma);
+void minus_gradU(vector<double> &gradu, vector<double> &r, vector<double> &rho_map, double nbr_sigma, int N, double L, double sigma);
 
 #endif

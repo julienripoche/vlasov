@@ -34,7 +34,7 @@ int main()
     vector<vector<double> > F(NA, vector<double>(3,0));
     for(int i=0 ; i<NA ; i++)
     {
-        F[i] = minus_gradU(r[i], rho, 2, n, 20, 1.);
+        minus_gradU(F[i], r[i], rho, 2, n, 20, 1.);
     }
 
     // Initialize useful variables
@@ -74,7 +74,7 @@ int main()
 
         for(int j=0 ; j<NA ; j++)
         {
-            F[j] = minus_gradU(r[j], rho, 2, n, 20, 1.);
+            minus_gradU(F[j], r[j], rho, 2, n, 20, 1.);
 
             //Loop over cartesian coordinates
             for(int k=0 ; k<3 ; k++)
