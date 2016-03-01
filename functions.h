@@ -4,7 +4,10 @@
 #define _A_ 56
 #define _N_ 20
 #define _NA_ (_N_ * _A_)
-#define _SIGMA_ 1
+#define _SIGMA_ (double) 1
+#define _BOX_NBR_ 30
+#define _L_ 20
+#define _L0_ (double) _L_ / _BOX_NBR_
 
 #include <iostream>
 #include <iomanip> //setprecision
@@ -33,5 +36,8 @@ double U(double rho);
 void rho(vector<double> &rho_map, vector<vector<double> > &coords, double l0, int box_nbr);
 void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> &r, double l0, int box_nbr, int sigma_nbr);
 double get_ubar(vector<double> &rho_map, vector<double> &r, double l0, int box_nbr, int sigma_nbr);
+
+void coords_generate(vector<vector<double> > &r, double radius_max);
+void momenta_generate(vector<vector<double> > &r, vector<vector<double> > &p);
 
 #endif

@@ -1,0 +1,1 @@
+ plot 'density.gnu' u 2:($1==10 ? $3 : 1/0)*200 w l, 'ubar.gnu' u 2:($1==10 ? $3 : 1/0) w l

@@ -5,18 +5,48 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
-#include <stdlib.h>
 #include "functions.h"
 
 using namespace std;
 
+double get_N(double a)
+{
+    double r0 = 1.12; //fm
+    double R = r0 * pow(_A_, 1./3);
+    double l = R/50;
+    double rho0 = 3./4/M_PI/pow(r0,3); //fm-3
+    double sum = 0;
+
+    for(double r=0 ; r<2*R ; r+=l)
+    {
+        sum += r * r * rho0/(1+exp((r-R)/a));
+    }
+
+    sum *= 4*M_PI*l;
+
+    return _NA_/sum;
+}
+
+double rho_ws(double r)
+{
+    double r0 = 1.12;
+    double R = r0 * pow(_A_, 1./3);
+    double rho0 = 3./4/M_PI/pow(r0,3);
+    return rho0/(1+exp((r-R)/_SIGMA_));
+}
+
 int main()
 {
-    srand48(time(NULL));
+    double r0 = 1.12;
+    double R = r0 * pow(_A_, 1./3);
+    double l = R/50;
+    double rho0 = 3./4/M_PI/pow(r0,3);
 
-    cout << 1%25 << " " << 57%25 << " " << -2%25 << endl;
-
-    cout << drand48() << endl;
+    ofstream wsFile("test_ws.gnu");
+    for(double r=0 ; r<2*R ; r+=l)
+    {
+        wsFile << r << " " << rho0/(1+exp((r-R)/_SIGMA_)) << endl;
+    }
 
     return 0;
 }

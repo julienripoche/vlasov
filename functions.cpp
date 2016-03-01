@@ -11,7 +11,7 @@ using namespace std;
 
 double alea()
 {
-    return drand48();
+    return double(rand())/RAND_MAX;
 }
 
 void sphere(vector<vector<double> > &r, double radius_max)
@@ -21,13 +21,67 @@ void sphere(vector<vector<double> > &r, double radius_max)
 
     for(int i=0 ; i<nbr_points ; i++)
     {
-        srand48(i);
         radius = radius_max*pow(alea(),1./3);
         theta = acos(1-2*alea());
         phi= 2*M_PI*alea();
         r[i][0] = radius*sin(theta)*cos(phi);
         r[i][1] = radius*sin(theta)*sin(phi);
         r[i][2] = radius*cos(theta);
+    }
+}
+
+double rho_ws(double r)
+{
+    double r0 = 1.12;
+    double R = r0 * pow(_A_, 1./3);
+    double rho0 = 3./4/M_PI/pow(r0,3);
+    return rho0/(1+exp((r-R)/_SIGMA_));
+}
+
+void coords_generate(vector<vector<double> > &r, double radius_max)
+{
+    double r0 = 1.12;
+    double rho0 = 3./4/M_PI/pow(r0,3);
+    double radius, theta, phi;
+    int nbr_points = r.size();
+
+    for(int i=0 ; i<nbr_points ; i++)
+    {
+        do
+        {
+            radius = radius_max*pow(alea(),1./3);
+        }
+        while(rho_ws(radius)/rho0 < alea());
+        theta = acos(1-2*alea());
+        phi= 2*M_PI*alea();
+        r[i][0] = radius*sin(theta)*cos(phi);
+        r[i][1] = radius*sin(theta)*sin(phi);
+        r[i][2] = radius*cos(theta);
+    }
+}
+
+double fermi_momentum(double rho)
+{
+    return pow(3./2*M_PI*M_PI*rho,1./3);
+}
+
+void momenta_generate(vector<vector<double> > &r, vector<vector<double> > &p)
+{
+    double radius, theta, phi;
+    int nbr_points = r.size();
+    double pf;
+    double module;
+
+    for(int i=0 ; i<nbr_points ; i++)
+    {
+        module = sqrt(r[i][0]*r[i][0] + r[i][1]*r[i][1] + r[i][2]*r[i][2]);
+        pf = fermi_momentum(rho_ws(module));
+        radius = pf*pow(alea(),1./3);
+        theta = acos(1-2*alea());
+        phi= 2*M_PI*alea();
+        p[i][0] = radius*sin(theta)*cos(phi);
+        p[i][1] = radius*sin(theta)*sin(phi);
+        p[i][2] = radius*cos(theta);
     }
 }
 

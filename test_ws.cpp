@@ -7,41 +7,46 @@
 #include <fstream>
 #include "functions.h"
 
-double density(double r, double a, int A)
-{
-    double r0 = 1.12; //fm
-    double R = r0 * pow(A, 1./3);
-    double rho0 = 3./4/M_PI/pow(r0,3); //fm-3
-    return rho0/(1+exp((r-R)/a));
-}
-
 using namespace std;
 
-void f(double tab[][10])
+double get_N(double a)
 {
-    cout << tab[5][5] << endl;
+    double r0 = 1.12; //fm
+    double R = r0 * pow(_A_, 1./3);
+    double l = R/50;
+    double rho0 = 3./4/M_PI/pow(r0,3); //fm-3
+    double sum = 0;
+
+    for(double r=0 ; r<2*R ; r+=l)
+    {
+        sum += r * r * rho0/(1+exp((r-R)/a));
+    }
+
+    sum *= 4*M_PI*l;
+
+    return _NA_/sum;
 }
 
+double rho_ws(double r)
+{
+    double r0 = 1.12;
+    double R = r0 * pow(_A_, 1./3);
+    double rho0 = 3./4/M_PI/pow(r0,3);
+    return rho0/(1+exp((r-R)/_SIGMA_));
+}
 
 int main()
 {
-    double a = 1.;
-    int A = 56;
-    double r0 = 1.12; //fm
-    double R = r0 * pow(A, 1./3);
-    double sum = 0;
-    double l0 = R/50;
+    double r0 = 1.12;
+    double R = r0 * pow(_A_, 1./3);
+    double l = R/50;
+    double rho0 = 3./4/M_PI/pow(r0,3);
 
     ofstream wsFile("test_ws.gnu");
-    for(double r=0 ; r<2*R ; r+=l0)
+    for(double r=0 ; r<2*R ; r+=l)
     {
-        wsFile << r << " " << density(r,a,A) << endl;
-        sum += r * r * density(r,a,A);
+        wsFile << r << " " << rho0/(1+exp((r-R)/_SIGMA_)) << endl;
     }
-
-    sum *= 4*M_PI*l0;
-
-    cout << "sum = " << sum << endl;
 
     return 0;
 }
