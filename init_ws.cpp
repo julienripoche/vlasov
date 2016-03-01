@@ -27,5 +27,14 @@ int main()
     write(coords, "coords.gnu");
     write(momenta, "momenta.gnu");
 
+    ofstream rpFile("rp.gnu");
+    double rMod, pMod;
+    for(int i=0 ; i<_NA_ ; i++)
+    {
+        rMod = coords[i][0]*coords[i][0] + coords[i][1]*coords[i][1] + coords[i][2]*coords[i][2];
+        pMod = momenta[i][0]*momenta[i][0] + momenta[i][1]*momenta[i][1] + momenta[i][2]*momenta[i][2];
+        rpFile << sqrt(rMod) << " " << sqrt(pMod) << endl;
+    }
+
     return 0;
 }
