@@ -26,7 +26,7 @@ int main()
 
     //Usefel variables
     int n_box = 20;
-    int nbr_sigma = 2;
+    int sigma_nbr = 2;
     double L = 15;
     double l0 = L/n_box;
 
@@ -38,7 +38,7 @@ int main()
     vector<vector<double> > F(_NA_, vector<double>(3,0));
     for(int i=0 ; i<_NA_ ; i++)
     {
-        minus_gradU(F[i], rho_map, r[i], nbr_sigma, n_box, l0);
+        minus_gradU(F[i], rho_map, r[i], l0, n_box, sigma_nbr);
     }
 
     // Initialize useful variables
@@ -78,7 +78,7 @@ int main()
 
         for(int j=0 ; j<_NA_ ; j++)
         {
-            minus_gradU(F[j], rho_map, r[j], nbr_sigma, n_box, l0);
+            minus_gradU(F[j], rho_map, r[j], l0, n_box, sigma_nbr);
 
             //Loop over cartesian coordinates
             for(int k=0 ; k<3 ; k++)

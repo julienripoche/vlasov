@@ -10,7 +10,7 @@ using namespace std;
 int main()
 {
     //Initialize random generator
-    srand(time(NULL));
+    srand48(time(NULL));
 
     //Initialize some constants
     double r0 = 1.12; //fm

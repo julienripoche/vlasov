@@ -11,7 +11,7 @@ using namespace std;
 
 double alea()
 {
-    return (double)rand()/RAND_MAX;
+    return drand48();
 }
 
 void sphere(vector<vector<double> > &r, double radius_max)
@@ -21,6 +21,7 @@ void sphere(vector<vector<double> > &r, double radius_max)
 
     for(int i=0 ; i<nbr_points ; i++)
     {
+        srand48(i);
         radius = radius_max*pow(alea(),1./3);
         theta = acos(1-2*alea());
         phi= 2*M_PI*alea();
@@ -87,39 +88,39 @@ double U(double rho)
     return -356*rho/rho0 + 303*pow(rho/rho0,7./6);
 }
 
-void rho(vector<double> &rho_map, vector<vector<double> > &coords, double l0, int box_size)
+void rho(vector<double> &rho_map, vector<vector<double> > &coords, double l0, int box_nbr)
 {
     //Initialize some variables
     vector<double> r(3);
 
     //Loop over the grid
-    for(int x=0 ; x<box_size ; x++)
+    for(int x=0 ; x<box_nbr ; x++)
     {
-        r[0] = (x-box_size/2.)*l0;
-        for(int y=0 ; y<box_size ; y++)
+        r[0] = (x-box_nbr/2.)*l0;
+        for(int y=0 ; y<box_nbr ; y++)
         {
-            r[1] = (y-box_size/2.)*l0;
-            for(int z=0 ; z<box_size ; z++)
+            r[1] = (y-box_nbr/2.)*l0;
+            for(int z=0 ; z<box_nbr ; z++)
             {
-                r[2] = (z-box_size/2.)*l0;
+                r[2] = (z-box_nbr/2.)*l0;
                 for(int i=0 ; i<_NA_ ; i++)
                 {
-                    rho_map[key(x,y,z,box_size)] += gaussian(r, coords[i]);
+                    rho_map[key(x,y,z,box_nbr)] += gaussian(r, coords[i]);
                 }
-                rho_map[key(x,y,z,box_size)] /= _N_;
+                rho_map[key(x,y,z,box_nbr)] /= _N_;
             }
         }
     }
 }
 
-void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> &r, int nbr_sigma, int N, double l0)
+void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> &r, double l0, int box_nbr, int sigma_nbr)
 {
     //Define some useful variables
     double gaus;
     double rho;
     int box_init[3];
     vector<double> box(3);
-    int nbr_cells = floor(nbr_sigma*_SIGMA_/l0);
+    int nbr_cells = floor(sigma_nbr*_SIGMA_/l0);
 
     int x1, y1, z1;
 
@@ -143,21 +144,15 @@ void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> 
                 
                 gaus = gaussian(r, box);
 
-                x1 = (box_init[0] + x + N/2)%N;
-                y1 = (box_init[1] + y + N/2)%N;
-                z1 = (box_init[2] + z + N/2)%N;
+                x1 = (box_init[0] + x + box_nbr/2 + box_nbr)%box_nbr;
+                y1 = (box_init[1] + y + box_nbr/2 + box_nbr)%box_nbr;
+                z1 = (box_init[2] + z + box_nbr/2 + box_nbr)%box_nbr;
 
-                rho = rho_map[key(x1,y1,z1,N)];
+                rho = rho_map[key(x1,y1,z1,box_nbr)];
 
                 gradu[0] += (r[0] - (box_init[0] + x + 0.5)*l0) * gaus * U(rho);
                 gradu[1] += (r[1] - (box_init[1] + y + 0.5)*l0) * gaus * U(rho);
                 gradu[2] += (r[2] - (box_init[2] + z + 0.5)*l0) * gaus * U(rho);
-
-                /*
-                for(int i=0 ; i<3 ; i++)
-                {
-                    gradu[i] += (r[i] - (box_init[i]+[i]+0.5)*l0) * gaus * U(rho);
-                }*/
             }
         }
     }
@@ -167,4 +162,49 @@ void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> 
         gradu[i] *= l0*l0*l0/_SIGMA_/_SIGMA_;
     }
 }
+
+double get_ubar(vector<double> &rho_map, vector<double> &r, double l0, int box_nbr, int sigma_nbr)
+{
+    //Define some useful variables
+    double gaus;
+    double rho;
+    int box_init[3];
+    vector<double> box(3);
+    int nbr_cells = floor(sigma_nbr*_SIGMA_/l0);
+    double ubar;
+    int x1, y1, z1;
+
+    //Initialize box coordinates
+    ubar = 0;
+    for(int i=0 ; i<3 ; i++)
+    {
+        box_init[i] = floor(r[i]/l0);
+    }
+
+    //Loop over considered cells
+    for(int x=-nbr_cells ; x<=nbr_cells ; x++)
+    {
+        box[0] = (box_init[0] + x + 0.5)*l0;
+        for(int y=-nbr_cells ; y<=nbr_cells ; y++)
+        {
+            box[1] = (box_init[1] + y + 0.5)*l0;
+            for(int z=-nbr_cells ; z<=nbr_cells ; z++)
+            {
+                box[2] = (box_init[2] + z + 0.5)*l0;
+                gaus = gaussian(r, box);
+
+                //(... + box_nbr)%box_nbr; to avoid negative number
+                x1 = (box_init[0] + x + box_nbr/2 + box_nbr)%box_nbr;
+                y1 = (box_init[1] + y + box_nbr/2 + box_nbr)%box_nbr;
+                z1 = (box_init[2] + z + box_nbr/2 + box_nbr)%box_nbr;
+                rho = rho_map[key(x1,y1,z1,box_nbr)];
+
+                ubar += gaus * U(rho);
+            }
+        }
+    }
+
+    return ubar*l0*l0*l0;
+}
+
 

@@ -34,6 +34,7 @@ int main()
         {
             densityFile << i*l0 << " " << j*l0 << " " << rho_map[key(i,j,n_box/2,n_box)] << endl;
         }
+        densityFile << endl;
     }
 
     return 0;
