@@ -39,5 +39,7 @@ double get_ubar(vector<double> &rho_map, vector<double> &r, double l0, int box_n
 
 void coords_generate(vector<vector<double> > &r, double radius_max);
 void momenta_generate(vector<vector<double> > &r, vector<vector<double> > &p);
+double rho_ws(double r);
+double fermi_momentum(double rho);
 
 #endif
