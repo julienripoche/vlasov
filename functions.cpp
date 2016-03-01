@@ -35,7 +35,7 @@ double rho_ws(double r)
     double r0 = 1.12;
     double R = r0 * pow(_A_, 1./3);
     double rho0 = 3./4/M_PI/pow(r0,3);
-    return rho0/(1+exp((r-R)/_SIGMA_));
+    return rho0/(1+exp((r-R)/2/_SIGMA_));
 }
 
 void coords_generate(vector<vector<double> > &r, double radius_max)
