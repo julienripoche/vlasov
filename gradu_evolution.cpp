@@ -25,7 +25,7 @@ int main()
     read(p, "momenta.gnu");
 
     //Usefel variables
-    int n_box = 20;
+    int n_box = 30;
     int sigma_nbr = 2;
     double L = 15;
     double l0 = L/n_box;

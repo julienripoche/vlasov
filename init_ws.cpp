@@ -24,8 +24,8 @@ int main()
     momenta_generate(coords, momenta);
 
     //Write the results in in gnu file
-    write(coords, "coords2.gnu");
-    write(momenta, "momenta2.gnu");
+    write(coords, "coords.gnu");
+    write(momenta, "momenta.gnu");
 
     return 0;
 }
