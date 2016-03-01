@@ -25,23 +25,20 @@ int main()
     read(p, "momenta.gnu");
 
     //Usefel variables
-    int N = 5;
     int n_box = 30;
     int nbr_sigma = 2;
-    double sigma = 1;
     double L = 20;
     double l0 = L/n_box;
 
     //Initialize rho map
-    vector<double> rho(n_box*n_box*n_box,0);
-    rho_map(rho, r, sigma, l0, n_box, N);
+    vector<double> rho_map(n_box*n_box*n_box,0);
+    rho(rho_map, r, l0, n_box);
 
     //Initialize strength
-    int NA = r.size();
-    vector<vector<double> > F(NA, vector<double>(3,0));
-    for(int i=0 ; i<NA ; i++)
+    vector<vector<double> > F(_NA_, vector<double>(3,0));
+    for(int i=0 ; i<_NA_ ; i++)
     {
-        minus_gradU(F[i], r[i], rho, nbr_sigma, n_box, l0, sigma);
+        minus_gradU(F[i], rho_map, r[i], nbr_sigma, n_box, l0);
     }
 
     // Initialize useful variables
@@ -62,7 +59,7 @@ int main()
         p_rms = 0;
 
         //Loop over all test particles
-        for(int j=0 ; j<NA ; j++)
+        for(int j=0 ; j<_NA_ ; j++)
         {
             //Initialize r and p modulus value
             r_modulus = 0;
@@ -77,11 +74,11 @@ int main()
             }
         }
 
-        rho_map(rho, r, sigma, l0, n_box, N);
+        rho(rho_map, r, l0, n_box);
 
-        for(int j=0 ; j<NA ; j++)
+        for(int j=0 ; j<_NA_ ; j++)
         {
-            minus_gradU(F[j], r[j], rho, nbr_sigma, n_box, l0, sigma);
+            minus_gradU(F[j], rho_map, r[j], nbr_sigma, n_box, l0);
 
             //Loop over cartesian coordinates
             for(int k=0 ; k<3 ; k++)
@@ -111,7 +108,7 @@ int main()
         cout << i << "/" << n_ite << endl;
 
         //Write rms values in gnu files
-        rmsFile << i*Dt << " " << sqrt(r_rms/NA) << " " << sqrt(p_rms/NA) << endl;
+        rmsFile << i*Dt << " " << sqrt(r_rms/_NA_) << " " << sqrt(p_rms/_NA_) << endl;
     }
 
     //Write the coordinates and momenta results in gnu files

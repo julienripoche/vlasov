@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+#include "functions.h"
+
 using namespace std;
 
 double alea()
@@ -72,10 +74,10 @@ double module(vector<double> &r_real, vector<double> &r_box)
     return sqrt(sqr_sum);
 }
 
-double gaussian(vector<double> &r_real, vector<double> &r_box, double sigma)
+double gaussian(vector<double> &r_real, vector<double> &r_box)
 {
     double r = module(r_real, r_box);
-    return 1/pow(sqrt(2*M_PI)*sigma,3)*exp(-r*r/2/sigma/sigma);
+    return 1/pow(sqrt(2*M_PI)*_SIGMA_,3)*exp(-r*r/2/_SIGMA_/_SIGMA_);
 }
 
 double U(double rho)
@@ -85,10 +87,9 @@ double U(double rho)
     return -356*rho/rho0 + 303*pow(rho/rho0,7./6);
 }
 
-void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma, double l0, int box_size, int N)
+void rho(vector<double> &rho_map, vector<vector<double> > &coords, double l0, int box_size)
 {
     //Initialize some variables
-    int NA = coords.size();
     vector<double> r(3);
 
     //Loop over the grid
@@ -101,24 +102,24 @@ void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma,
             for(int z=0 ; z<box_size ; z++)
             {
                 r[2] = (z-box_size/2.)*l0;
-                for(int i=0 ; i<NA ; i++)
+                for(int i=0 ; i<_NA_ ; i++)
                 {
-                    rho[key(x,y,z,box_size)] += gaussian(r, coords[i], sigma);
+                    rho_map[key(x,y,z,box_size)] += gaussian(r, coords[i]);
                 }
-                rho[key(x,y,z,box_size)] /= N;
+                rho_map[key(x,y,z,box_size)] /= _N_;
             }
         }
     }
 }
 
-void minus_gradU(vector<double> &gradu, vector<double> &r, vector<double> &rho_map, int nbr_sigma, int N, double l0, double sigma)
+void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> &r, int nbr_sigma, int N, double l0)
 {
     //Define some useful variables
     double gaus;
     double rho;
     int box_init[3];
     vector<double> box(3);
-    int nbr_cells = floor(nbr_sigma*sigma/l0);
+    int nbr_cells = floor(nbr_sigma*_SIGMA_/l0);
 
     int x1, y1, z1;
 
@@ -141,7 +142,7 @@ void minus_gradU(vector<double> &gradu, vector<double> &r, vector<double> &rho_m
             {
                 box[2] = (box_init[2] + z + 0.5)*l0;
                 
-                gaus = gaussian(r, box, sigma);
+                gaus = gaussian(r, box);
 
                 x1 = (box_init[0] + N/2 + x)%N;
                 y1 = (box_init[1] + N/2 + y)%N;
@@ -164,7 +165,7 @@ void minus_gradU(vector<double> &gradu, vector<double> &r, vector<double> &rho_m
 
     for(int i=0 ; i<3 ; i++)
     {
-        gradu[i] *= l0*l0*l0/sigma/sigma;
+        gradu[i] *= l0*l0*l0/_SIGMA_/_SIGMA_;
     }
 }
 

@@ -20,7 +20,7 @@ int main()
         p[i] = 2;
     }
 
-    cout << "gaussian = " << gaussian(r, p, 1.) << endl;
+    cout << "gaussian = " << gaussian(r, p) << endl;
 
     return 0;
 }

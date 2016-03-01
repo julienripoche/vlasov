@@ -26,9 +26,8 @@ int main()
     read(p, "momenta.gnu");
 
     //Initialize strength
-    int NA = r.size();
-    vector<vector<double> > F(NA, vector<double>(3,0));
-    for(int i=0 ; i<NA ; i++)
+    vector<vector<double> > F(_NA_, vector<double>(3,0));
+    for(int i=0 ; i<_NA_ ; i++)
     {
         for(int j=0 ; j<3 ; j++)
         {
@@ -54,7 +53,7 @@ int main()
         p_rms = 0;
 
         //Loop over all test particles
-        for(int j=0 ; j<NA ; j++)
+        for(int j=0 ; j<_NA_ ; j++)
         {
             //Initialize r and p modulus value
             r_modulus = 0;
@@ -89,7 +88,7 @@ int main()
         }
 
         //Write r and p rms
-        rmsFile << i*Dt << " " << sqrt(r_rms/NA) << " " << sqrt(p_rms/NA) << endl;
+        rmsFile << i*Dt << " " << sqrt(r_rms/_NA_) << " " << sqrt(p_rms/_NA_) << endl;
     }
 
     //Write the coordinates and momenta results in gnu files
