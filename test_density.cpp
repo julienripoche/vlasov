@@ -14,21 +14,27 @@ int main()
     //Initialize positions and momenta values
     vector<vector<double> > r;
     vector<vector<double> > p;
-    read("coords.gnu", r);
-    read("momenta.gnu", p);
+    read(r, "coords.gnu");
+    read(p, "momenta.gnu");
+
+    //Useful variables
+    int N = 5;
+    int n_box = 30;
+    double L = 20.;
+    double l0 = L/n_box;
+    double sigma = 1.;
 
     //Initialize rho map
-    int n = 30;
-    vector<double> rho(n*n*n,0);
-    rho_map(rho, r, 1., 20, 30);
+    vector<double> rho(n_box*n_box*n_box,0);
+    rho_map(rho, r, sigma, l0, n_box, N);
 
     //Write density profile in "density.gnu" 
     ofstream densityFile("density.gnu");
-    for(int i=0 ; i<n ; i++)
+    for(int i=0 ; i<n_box ; i++)
     {
-        for(int j=0 ; j<n ; j++)
+        for(int j=0 ; j<n_box ; j++)
         {
-            densityFile << i << " " << j << " " << rho[key(i,j,n/2,n)] << endl;
+            densityFile << i << " " << j << " " << rho[key(i,j,n_box/2,n_box)] << endl;
         }
     }
 

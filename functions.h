@@ -25,7 +25,7 @@ double gaussian(vector<double> &r_real, vector<double> &r_box, double sigma);
 double U(double rho);
 
 //Evolution functions
-void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma, double L, int box_size, int N);
-void minus_gradU(vector<double> &gradu, vector<double> &r, vector<double> &rho_map, double nbr_sigma, int N, double L, double sigma);
+void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma, double l0, int box_size, int N);
+void minus_gradU(vector<double> &gradu, vector<double> &r, vector<double> &rho_map, int nbr_sigma, int N, double l0, double sigma);
 
 #endif

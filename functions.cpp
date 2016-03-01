@@ -85,11 +85,10 @@ double U(double rho)
     return -356*rho/rho0 + 303*pow(rho/rho0,7./6);
 }
 
-void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma, double L, int box_size, int N)
+void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma, double l0, int box_size, int N)
 {
     //Initialize some variables
     int NA = coords.size();
-    double l0 = L/box_size;
     vector<double> r(3);
 
     //Loop over the grid
@@ -112,10 +111,9 @@ void rho_map(vector<double> &rho, vector<vector<double> > &coords, double sigma,
     }
 }
 
-void minus_gradU(vector<double> &gradu, vector<double> &r, vector<double> &rho_map, double nbr_sigma, int N, double L, double sigma)
+void minus_gradU(vector<double> &gradu, vector<double> &r, vector<double> &rho_map, int nbr_sigma, int N, double l0, double sigma)
 {
     //Define some useful variables
-    double l0 = L/N;
     double gaus;
     double rho;
     int box_init[3];

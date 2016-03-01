@@ -24,21 +24,28 @@ int main()
     read(r, "coords.gnu");
     read(p, "momenta.gnu");
 
+    //Usefel variables
+    int N = 5;
+    int n_box = 30;
+    int nbr_sigma = 2;
+    double sigma = 1;
+    double L = 20;
+    double l0 = L/n_box;
+
     //Initialize rho map
-    int n = 30;
-    vector<double> rho(n*n*n,0);
-    rho_map(rho, r, 1., 20, n, 5);
+    vector<double> rho(n_box*n_box*n_box,0);
+    rho_map(rho, r, sigma, l0, n_box, N);
 
     //Initialize strength
     int NA = r.size();
     vector<vector<double> > F(NA, vector<double>(3,0));
     for(int i=0 ; i<NA ; i++)
     {
-        minus_gradU(F[i], r[i], rho, 2, n, 20, 1.);
+        minus_gradU(F[i], r[i], rho, nbr_sigma, n_box, l0, sigma);
     }
 
     // Initialize useful variables
-    int n_ite = 10;
+    int n_ite = 5;
     double r_modulus;
     double p_modulus;
     double r_rms;
@@ -70,11 +77,11 @@ int main()
             }
         }
 
-        rho_map(rho, r, 1., 20, n, 5);
+        rho_map(rho, r, sigma, l0, n_box, N);
 
         for(int j=0 ; j<NA ; j++)
         {
-            minus_gradU(F[j], r[j], rho, 2, n, 20, 1.);
+            minus_gradU(F[j], r[j], rho, nbr_sigma, n_box, l0, sigma);
 
             //Loop over cartesian coordinates
             for(int k=0 ; k<3 ; k++)
