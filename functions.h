@@ -2,7 +2,7 @@
 #define DEF_FUNCTIONS
 
 #define _A_ 56
-#define _N_ 20
+#define _N_ 200
 #define _NA_ (_N_ * _A_)
 #define _SIGMA_ 1
 

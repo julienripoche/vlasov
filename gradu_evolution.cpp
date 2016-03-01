@@ -16,7 +16,7 @@ int main()
     double m_neutron = 939.6; //MeV
     double hbar_c = 197.3; //MeV.fm
     double m = (m_proton+m_neutron)/2/hbar_c; //fm-1
-    double Dt = 0.005; //fm
+    double Dt = 0.05; //fm
 
     //Initialize positions and momenta values
     vector<vector<double> > r;
@@ -25,9 +25,9 @@ int main()
     read(p, "momenta.gnu");
 
     //Usefel variables
-    int n_box = 30;
+    int n_box = 20;
     int nbr_sigma = 2;
-    double L = 20;
+    double L = 15;
     double l0 = L/n_box;
 
     //Initialize rho map
@@ -42,7 +42,7 @@ int main()
     }
 
     // Initialize useful variables
-    int n_ite = 5;
+    int n_ite = 200;
     double r_modulus;
     double p_modulus;
     double r_rms;
