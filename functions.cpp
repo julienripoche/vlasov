@@ -126,7 +126,6 @@ void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> 
     //Initialize box coordinates
     for(int i=0 ; i<3 ; i++)
     {
-        //box_init[i] = (floor(r[i]/l0) + 0.5)*l0;
         box_init[i] = floor(r[i]/l0);
         gradu[i] = 0;
     }
@@ -144,15 +143,15 @@ void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> 
                 
                 gaus = gaussian(r, box);
 
-                x1 = (box_init[0] + N/2 + x)%N;
-                y1 = (box_init[1] + N/2 + y)%N;
-                z1 = (box_init[2] + N/2 + z)%N;
+                x1 = (box_init[0] + x + N/2)%N;
+                y1 = (box_init[1] + y + N/2)%N;
+                z1 = (box_init[2] + z + N/2)%N;
 
                 rho = rho_map[key(x1,y1,z1,N)];
 
-                gradu[0] += (r[0] - (x1 + 0.5)*l0) * gaus * U(rho);
-                gradu[1] += (r[1] - (y1 + 0.5)*l0) * gaus * U(rho);
-                gradu[2] += (r[2] - (z1 + 0.5)*l0) * gaus * U(rho);
+                gradu[0] += (r[0] - (box_init[0] + x + 0.5)*l0) * gaus * U(rho);
+                gradu[1] += (r[1] - (box_init[1] + y + 0.5)*l0) * gaus * U(rho);
+                gradu[2] += (r[2] - (box_init[2] + z + 0.5)*l0) * gaus * U(rho);
 
                 /*
                 for(int i=0 ; i<3 ; i++)
