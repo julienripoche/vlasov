@@ -7,6 +7,7 @@
 #include "functions.h"
 using namespace std;
 
+
 int main()
 {
     //Initialize random generator

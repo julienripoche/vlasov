@@ -7,6 +7,7 @@
 #include <fstream>
 #include "functions.h"
 
+
 using namespace std;
 
 double alea()
