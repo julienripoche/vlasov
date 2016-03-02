@@ -4,14 +4,14 @@
 #define _A_ 56
 #define _N_ 100
 #define _NA_ (_N_ * _A_)
-#define _SIGMA_ (double) 0.5
-#define _SIGMA_NBR_ 2
-#define _BOX_NBR_ 30
-#define _L_ 15
+#define _SIGMA_ 0.5
+#define _SIGMA_NBR_ 3
+#define _BOX_NBR_ 40
+#define _L_ 20
 #define _L0_ (double) _L_ / _BOX_NBR_
-#define _R0_ (double) 1.12
-#define _HBAR_C_ (double) 197.3
-#define _M_ (double) (938.3 + 939.6) /2
+#define _R0_ 1.12
+#define _HBAR_C_ 197.3
+#define _M_ (double) (938.3 + 939.6) / 2
 #define _DT_ 0.1
 
 #include <iostream>

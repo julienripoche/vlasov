@@ -25,6 +25,17 @@ int main()
     vector<double> rho_map(_BOX_NBR_*_BOX_NBR_*_BOX_NBR_,0);
     rho(rho_map, r);
 
+    //Write density profile in "density.gnu"
+    ofstream densityFile("density.gnu");
+    for(int i=0 ; i<_BOX_NBR_ ; i++)
+    {
+        for(int j=0 ; j<_BOX_NBR_ ; j++)
+        {
+            densityFile << i*_L0_ << " " << j*_L0_ << " " << rho_map[key(i,j,_BOX_NBR_/2,_BOX_NBR_)] << endl;
+        }
+        densityFile << endl;
+    }
+
     //Initialize strength
     vector<vector<double> > F(_NA_, vector<double>(3,0));
     for(int i=0 ; i<_NA_ ; i++)
@@ -33,7 +44,7 @@ int main()
     }
 
     // Initialize useful variables
-    int n_ite = 50;
+    int n_ite = 100;
     double r_modulus;
     double p_modulus;
     double r_rms;

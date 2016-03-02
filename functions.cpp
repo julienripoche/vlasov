@@ -144,13 +144,15 @@ double gaussian(vector<double> &r_real, vector<double> &r_box)
 double U(double rho)
 {
     double rho0 = 3./4/M_PI/pow(_R0_,3); //fm-3
-    return (-356*rho/rho0 + 303*pow(rho/rho0,7./6))/197.3;
+    return (-356*rho/rho0 + 303*pow(rho/rho0,7./6));
 }
 
 void rho(vector<double> &rho_map, vector<vector<double> > &coords)
 {
     //Initialize some variables
-    int nbr_cells = floor(_SIGMA_NBR_*_SIGMA_/_L0_);
+    double l0 = _L0_;
+    double x1, y1, z1;
+    int nbr_cells = floor(_SIGMA_NBR_*_SIGMA_/l0);
     vector<int> box_init(3);
     vector<double> r(3);
 
@@ -166,20 +168,25 @@ void rho(vector<double> &rho_map, vector<vector<double> > &coords)
         //Set origin to particle coordinates
         for(int j=0 ; j<3 ; j++)
         {
-            box_init[j] = floor(coords[i][j]/_L0_);
+            box_init[j] = floor(coords[i][j]/l0);
         }
 
         //Loop over considered cells
         for(int x=-nbr_cells ; x<=nbr_cells ; x++)
         {
-            r[0] = (box_init[0] + x)*_L0_;
+            r[0] = (box_init[0] + x)*l0;
             for(int y=-nbr_cells ; y<=nbr_cells ; y++)
             {
-                r[1] = (box_init[1] + y)*_L0_;
+                r[1] = (box_init[1] + y)*l0;
                 for(int z=-nbr_cells ; z<=nbr_cells ; z++)
                 {
-                    r[2] = (box_init[2] + z)*_L0_;
-                    rho_map[key(x,y,z,_BOX_NBR_)] += gaussian(r, coords[i]);
+                    r[2] = (box_init[2] + z)*l0;
+
+                    x1 = (box_init[0] + x + _BOX_NBR_/2 + _BOX_NBR_) % _BOX_NBR_;
+                    y1 = (box_init[1] + y + _BOX_NBR_/2 + _BOX_NBR_) % _BOX_NBR_;
+                    z1 = (box_init[2] + z + _BOX_NBR_/2 + _BOX_NBR_) % _BOX_NBR_;
+
+                    rho_map[key(x1,y1,z1,_BOX_NBR_)] += gaussian(r, coords[i]);
                 }
             }
          }
@@ -195,14 +202,14 @@ void rho(vector<double> &rho_map, vector<vector<double> > &coords)
 /*
     for(int x=0 ; x<_BOX_NBR_ ; x++)
     {
-        r[0] = (x-_BOX_NBR_/2.)*_L0_;
+        r[0] = (x-_BOX_NBR_/2.)*l0;
         for(int y=0 ; y<_BOX_NBR_ ; y++)
         {
-            r[1] = (y-_BOX_NBR_/2.)*_L0_;
+            r[1] = (y-_BOX_NBR_/2.)*l0;
             for(int z=0 ; z<_BOX_NBR_ ; z++)
             {
                 rho_map[key(x,y,z,_BOX_NBR_)] = 0;
-                r[2] = (z-_BOX_NBR_/2.)*_L0_;
+                r[2] = (z-_BOX_NBR_/2.)*l0;
                 for(int i=0 ; i<_NA_ ; i++)
                 {
                     rho_map[key(x,y,z,_BOX_NBR_)] += gaussian(r, coords[i]);
@@ -217,31 +224,32 @@ void rho(vector<double> &rho_map, vector<vector<double> > &coords)
 void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> &r)
 {
     //Define some useful variables
+    double l0 = _L0_;
     double gaus;
     double rho;
     int box_init[3];
     vector<double> box(3);
-    int nbr_cells = floor(_SIGMA_NBR_*_SIGMA_/_L0_);
+    int nbr_cells = floor(_SIGMA_NBR_*_SIGMA_/l0);
 
     int x1, y1, z1;
 
     //Initialize box coordinates
     for(int i=0 ; i<3 ; i++)
     {
-        box_init[i] = floor(r[i]/_L0_);
+        box_init[i] = floor(r[i]/l0);
         gradu[i] = 0;
     }
 
     //Loop over considered cells
     for(int x=-nbr_cells ; x<=nbr_cells ; x++)
     {
-        box[0] = (box_init[0] + x + 0.5)*_L0_;
+        box[0] = (box_init[0] + x + 0.5)*l0;
         for(int y=-nbr_cells ; y<=nbr_cells ; y++)
         {
-            box[1] = (box_init[1] + y + 0.5)*_L0_;
+            box[1] = (box_init[1] + y + 0.5)*l0;
             for(int z=-nbr_cells ; z<=nbr_cells ; z++)
             {
-                box[2] = (box_init[2] + z + 0.5)*_L0_;
+                box[2] = (box_init[2] + z + 0.5)*l0;
                 
                 gaus = gaussian(r, box);
 
@@ -251,27 +259,28 @@ void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> 
 
                 rho = rho_map[key(x1,y1,z1,_BOX_NBR_)];
 
-                gradu[0] += (r[0] - (box_init[0]+x+0.5)*_L0_) * gaus * U(rho);
-                gradu[1] += (r[1] - (box_init[1]+y+0.5)*_L0_) * gaus * U(rho);
-                gradu[2] += (r[2] - (box_init[2]+z+0.5)*_L0_) * gaus * U(rho);
+                gradu[0] += (r[0] - (box_init[0]+x+0.5)*l0) * gaus * U(rho);
+                gradu[1] += (r[1] - (box_init[1]+y+0.5)*l0) * gaus * U(rho);
+                gradu[2] += (r[2] - (box_init[2]+z+0.5)*l0) * gaus * U(rho);
             }
         }
     }
 
     for(int i=0 ; i<3 ; i++)
     {
-        gradu[i] *= _L0_*_L0_*_L0_/_SIGMA_/_SIGMA_;
+        gradu[i] *= l0*l0*l0/_SIGMA_/_SIGMA_;
     }
 }
 
 double get_ubar(vector<double> &rho_map, vector<double> &r)
 {
     //Define some useful variables
+    double l0 = _L0_;
     double gaus;
     double rho;
     int box_init[3];
     vector<double> box(3);
-    int nbr_cells = floor(_SIGMA_NBR_*_SIGMA_/_L0_);
+    int nbr_cells = floor(_SIGMA_NBR_*_SIGMA_/l0);
     double ubar;
     int x1, y1, z1;
 
@@ -279,19 +288,19 @@ double get_ubar(vector<double> &rho_map, vector<double> &r)
     ubar = 0;
     for(int i=0 ; i<3 ; i++)
     {
-        box_init[i] = floor(r[i]/_L0_);
+        box_init[i] = floor(r[i]/l0);
     }
 
     //Loop over considered cells
     for(int x=-nbr_cells ; x<=nbr_cells ; x++)
     {
-        box[0] = (box_init[0] + x + 0.5)*_L0_;
+        box[0] = (box_init[0] + x + 0.5)*l0;
         for(int y=-nbr_cells ; y<=nbr_cells ; y++)
         {
-            box[1] = (box_init[1] + y + 0.5)*_L0_;
+            box[1] = (box_init[1] + y + 0.5)*l0;
             for(int z=-nbr_cells ; z<=nbr_cells ; z++)
             {
-                box[2] = (box_init[2] + z + 0.5)*_L0_;
+                box[2] = (box_init[2] + z + 0.5)*l0;
                 gaus = gaussian(r, box);
 
                 //(... + box_nbr)%box_nbr; to avoid negative number
@@ -305,7 +314,7 @@ double get_ubar(vector<double> &rho_map, vector<double> &r)
         }
     }
 
-    return ubar*_L0_*_L0_*_L0_;
+    return ubar*l0*l0*l0;
 }
 
 
