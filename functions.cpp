@@ -7,7 +7,6 @@
 #include <fstream>
 #include "functions.h"
 
-
 using namespace std;
 
 double alea()
@@ -71,12 +70,10 @@ void momenta_generate(vector<vector<double> > &r, vector<vector<double> > &p)
     double radius, theta, phi;
     int nbr_points = r.size();
     double pf;
-    double module;
 
     for(int i=0 ; i<nbr_points ; i++)
     {
-        module = sqrt(r[i][0]*r[i][0] + r[i][1]*r[i][1] + r[i][2]*r[i][2]);
-        pf = fermi_momentum(rho_ws(module));
+        pf = fermi_momentum(rho_ws(module(r[i])));
         radius = pf*pow(alea(),1./3);
         theta = acos(1-2*alea());
         phi= 2*M_PI*alea();
@@ -120,19 +117,29 @@ int key(int x, int y, int z, int N)
     return x*N*N + y*N + z;
 }
 
-double module(vector<double> &r_real, vector<double> &r_box)
+double module(vector<double> &r)
 {
-    double sqr_sum = 0;
+    double sum = 0;
     for(int i=0 ; i<3 ; i++)
     {
-        sqr_sum += (r_real[i] - r_box[i]) * (r_real[i] - r_box[i]);
+        sum += r[i] * r[i];
     }
-    return sqrt(sqr_sum);
+    return sqrt(sum);
+}
+
+double vect_module(vector<double> &r_real, vector<double> &r_box)
+{
+    double sum = 0;
+    for(int i=0 ; i<3 ; i++)
+    {
+        sum += (r_real[i] - r_box[i]) * (r_real[i] - r_box[i]);
+    }
+    return sqrt(sum);
 }
 
 double gaussian(vector<double> &r_real, vector<double> &r_box)
 {
-    double r = module(r_real, r_box);
+    double r = vect_module(r_real, r_box);
     return 1/pow(sqrt(2*M_PI)*_SIGMA_,3)*exp(-r*r/2/_SIGMA_/_SIGMA_);
 }
 
@@ -140,7 +147,7 @@ double U(double rho)
 {
     double r0 = 1.12; //fm
     double rho0 = 3./4/M_PI/pow(r0,3); //fm-3
-    return -356*rho/rho0 + 303*pow(rho/rho0,7./6);
+    return (-356*rho/rho0 + 303*pow(rho/rho0,7./6))/197.3;
 }
 
 void rho(vector<double> &rho_map, vector<vector<double> > &coords, double l0, int box_nbr)

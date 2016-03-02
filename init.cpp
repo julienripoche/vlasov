@@ -11,7 +11,7 @@ using namespace std;
 int main()
 {
     //Initialize random generator
-    srand48(time(NULL));
+    srand(time(NULL));
 
     //Initialize some constants
     double r0 = 1.12; //fm

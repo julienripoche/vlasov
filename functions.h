@@ -28,7 +28,8 @@ void read(vector<vector<double> > &data, string const nomFichier);
 
 //Useful functions
 int key(int x, int y, int z, int N);
-double module(vector<double> &r_real, vector<double> &r_box);
+double module(vector<double> &r);
+double vect_module(vector<double> &r_real, vector<double> &r_box);
 double gaussian(vector<double> &r_real, vector<double> &r_box);
 double U(double rho);
 
