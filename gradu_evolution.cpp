@@ -9,6 +9,10 @@
 
 using namespace std;
 
+//*************************
+// RHO MAP NOT FREEZED
+//*************************
+
 int main()
 {
     //Initialize some constants
@@ -16,7 +20,7 @@ int main()
     double m_neutron = 939.6; //MeV
     double hbar_c = 197.3; //MeV.fm
     double m = (m_proton+m_neutron)/2/hbar_c; //fm-1
-    double Dt = 0.05; //fm
+    double Dt = 0.1; //fm
 
     //Initialize positions and momenta values
     vector<vector<double> > r;
@@ -42,7 +46,7 @@ int main()
     }
 
     // Initialize useful variables
-    int n_ite = 200;
+    int n_ite = 1000;
     double r_modulus;
     double p_modulus;
     double r_rms;

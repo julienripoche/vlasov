@@ -157,6 +157,7 @@ void rho(vector<double> &rho_map, vector<vector<double> > &coords, double l0, in
             r[1] = (y-box_nbr/2.)*l0;
             for(int z=0 ; z<box_nbr ; z++)
             {
+                rho_map[key(x,y,z,box_nbr)] = 0;
                 r[2] = (z-box_nbr/2.)*l0;
                 for(int i=0 ; i<_NA_ ; i++)
                 {
