@@ -2,12 +2,17 @@
 #define DEF_FUNCTIONS
 
 #define _A_ 56
-#define _N_ 50
+#define _N_ 100
 #define _NA_ (_N_ * _A_)
 #define _SIGMA_ (double) 0.5
+#define _SIGMA_NBR_ 2
 #define _BOX_NBR_ 30
 #define _L_ 15
 #define _L0_ (double) _L_ / _BOX_NBR_
+#define _R0_ (double) 1.12
+#define _HBAR_C_ (double) 197.3
+#define _M_ (double) (938.3 + 939.6) /2
+#define _DT_ 0.1
 
 #include <iostream>
 #include <iomanip> //setprecision
@@ -34,9 +39,9 @@ double gaussian(vector<double> &r_real, vector<double> &r_box);
 double U(double rho);
 
 //Evolution functions
-void rho(vector<double> &rho_map, vector<vector<double> > &coords, double l0, int box_nbr);
-void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> &r, double l0, int box_nbr, int sigma_nbr);
-double get_ubar(vector<double> &rho_map, vector<double> &r, double l0, int box_nbr, int sigma_nbr);
+void rho(vector<double> &rho_map, vector<vector<double> > &coords);
+void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> &r);
+double get_ubar(vector<double> &rho_map, vector<double> &r);
 
 void coords_generate(vector<vector<double> > &r, double radius_max);
 void momenta_generate(vector<vector<double> > &r, vector<vector<double> > &p);

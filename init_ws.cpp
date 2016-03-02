@@ -14,13 +14,12 @@ int main()
     srand(time(NULL));
 
     //Initialize some constants
-    double r0 = 1.12; //fm
-    double r = r0 * pow(_A_,1./3);
+    double R = _R0_ * pow(_A_,1./3);
 
     //Initialize positions and momenta values
     vector<vector<double> > coords(_NA_, vector<double>(3));
     vector<vector<double> > momenta(_NA_, vector<double>(3));
-    coords_generate(coords, r);
+    coords_generate(coords, R);
     momenta_generate(coords, momenta);
 
     //Write the results in in gnu file
@@ -28,7 +27,6 @@ int main()
     write(momenta, "momenta.gnu");
 
     //Check the relation between r and p
-    /*
     ofstream rpFile("rp.gnu");
     double rMod, pMod;
     for(int i=0 ; i<_NA_ ; i++)
@@ -37,7 +35,6 @@ int main()
         pMod = momenta[i][0]*momenta[i][0] + momenta[i][1]*momenta[i][1] + momenta[i][2]*momenta[i][2];
         rpFile << sqrt(rMod) << " " << sqrt(pMod) << endl;
     }
-    */
 
     return 0;
 }

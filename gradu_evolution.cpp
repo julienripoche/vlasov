@@ -15,38 +15,25 @@ using namespace std;
 
 int main()
 {
-    //Initialize some constants
-    double m_proton = 938.3; //MeV
-    double m_neutron = 939.6; //MeV
-    double hbar_c = 197.3; //MeV.fm
-    double m = (m_proton+m_neutron)/2/hbar_c; //fm-1
-    double Dt = 0.1; //fm
-
     //Initialize positions and momenta values
     vector<vector<double> > r;
     vector<vector<double> > p;
     read(r, "coords.gnu");
     read(p, "momenta.gnu");
 
-    //Usefel variables
-    int n_box = 30;
-    int sigma_nbr = 2;
-    double L = 15;
-    double l0 = L/n_box;
-
     //Initialize rho map
-    vector<double> rho_map(n_box*n_box*n_box,0);
-    rho(rho_map, r, l0, n_box);
+    vector<double> rho_map(_BOX_NBR_*_BOX_NBR_*_BOX_NBR_,0);
+    rho(rho_map, r);
 
     //Initialize strength
     vector<vector<double> > F(_NA_, vector<double>(3,0));
     for(int i=0 ; i<_NA_ ; i++)
     {
-        minus_gradU(F[i], rho_map, r[i], l0, n_box, sigma_nbr);
+        minus_gradU(F[i], rho_map, r[i]);
     }
 
     // Initialize useful variables
-    int n_ite = 1000;
+    int n_ite = 50;
     double r_modulus;
     double p_modulus;
     double r_rms;
@@ -73,21 +60,21 @@ int main()
             for(int k=0 ; k<3 ; k++)
             {
                 //Differential system resolution
-                p[j][k] += 1./2*F[j][k]*Dt;
-                r[j][k] += 1./m*p[j][k]*Dt;
+                p[j][k] += 1./2*F[j][k]*_DT_;
+                r[j][k] += 1./_M_*p[j][k]*_DT_;
             }
         }
 
-        rho(rho_map, r, l0, n_box);
+        rho(rho_map, r);
 
         for(int j=0 ; j<_NA_ ; j++)
         {
-            minus_gradU(F[j], rho_map, r[j], l0, n_box, sigma_nbr);
+            minus_gradU(F[j], rho_map, r[j]);
 
             //Loop over cartesian coordinates
             for(int k=0 ; k<3 ; k++)
             { 
-                p[j][k] += 1./2*F[j][k]*Dt;
+                p[j][k] += 1./2*F[j][k]*_DT_;
 
                 //Rms
                 r_rms += r[j][k]*r[j][k];
@@ -104,7 +91,7 @@ int main()
             //Write modulus of one test particle
             if(j==1)
             {
-                partFile << i*Dt << " " << sqrt(r_modulus) << " " << sqrt(p_modulus) << endl;
+                partFile << i*_DT_ << " " << sqrt(r_modulus) << " " << sqrt(p_modulus) << endl;
             }
         }
 
@@ -112,7 +99,7 @@ int main()
         cout << i << "/" << n_ite << endl;
 
         //Write rms values in gnu files
-        rmsFile << i*Dt << " " << sqrt(r_rms/_NA_) << " " << sqrt(p_rms/_NA_) << endl;
+        rmsFile << i*_DT_ << " " << sqrt(r_rms/_NA_) << " " << sqrt(p_rms/_NA_) << endl;
     }
 
     //Write the coordinates and momenta results in gnu files
