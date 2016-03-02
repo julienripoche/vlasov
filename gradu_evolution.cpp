@@ -36,6 +36,27 @@ int main()
         densityFile << endl;
     }
 
+    //Write potential profile in "ubar.gnu" 
+    ofstream ubarFile("ubar.gnu");
+    vector<double> ubar_map(_BOX_NBR_*_BOX_NBR_*_BOX_NBR_,0);
+    vector<double> r0(3);
+    for(int i=0 ; i<_BOX_NBR_ ; i++)
+    {
+        r0[0] = (i-_BOX_NBR_/2.)*_L0_;
+        for(int j=0 ; j<_BOX_NBR_ ; j++)
+        {
+            r0[1] = (j-_BOX_NBR_/2.)*_L0_;
+            
+            for(int k=0 ; k<_BOX_NBR_ ; k++)
+            {
+                r0[2] = (k-_BOX_NBR_/2.)*_L0_;
+                ubar_map[key(i,j,k,_BOX_NBR_)] = get_ubar(rho_map, r0);
+            }
+            ubarFile << i*_L0_ << " " << j*_L0_ << " " << ubar_map[key(i,j,_BOX_NBR_/2,_BOX_NBR_)] << endl;
+        }
+        ubarFile << endl;
+    }
+
     //Initialize strength
     vector<vector<double> > F(_NA_, vector<double>(3,0));
     for(int i=0 ; i<_NA_ ; i++)
@@ -44,7 +65,7 @@ int main()
     }
 
     // Initialize useful variables
-    int n_ite = 100;
+    int n_ite = 1000;
     double r_modulus;
     double p_modulus;
     double r_rms;
