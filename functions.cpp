@@ -147,6 +147,24 @@ double U(double rho)
     return (-356*rho/rho0 + 303*pow(rho/rho0,7./6));
 }
 
+double get_N(double a)
+{
+    double r0 = 1.12; //fm
+    double R = r0 * pow(_A_, 1./3);
+    double l = R/50;
+    double rho0 = 3./4/M_PI/pow(r0,3); //fm-3
+    double sum = 0;
+
+    for(double r=0 ; r<2*R ; r+=l)
+    {
+        sum += r * r * rho0/(1+exp((r-R)/a));
+    }
+
+    sum *= 4*M_PI*l;
+
+    return _NA_/sum;
+}
+
 void rho(vector<double> &rho_map, vector<vector<double> > &coords)
 {
     //Initialize some variables
@@ -195,7 +213,7 @@ void rho(vector<double> &rho_map, vector<vector<double> > &coords)
     //Divide by _N_
     for(int i=0 ; i<_BOX_NBR_*_BOX_NBR_*_BOX_NBR_ ; i++)
     {
-        rho_map[i] /= _N_;
+        rho_map[i] /= get_N(_SIGMA_);//_N_;
     }
 
     //Loop over the grid

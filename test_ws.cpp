@@ -33,6 +33,9 @@ int main()
     double R = r0 * pow(_A_, 1./3);
     double l = R/50;
 
+
+    cout << "N new = " << get_N(0.5) << endl;
+
     ofstream wsFile("test_ws.gnu");
     for(double r=0 ; r<2*R ; r+=l)
     {
