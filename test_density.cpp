@@ -19,7 +19,7 @@ int main()
 
     //Useful variables
     int n_box = 30;
-    double L = 20.;
+    double L = 15;
     double l0 = L/n_box;
 
     //Initialize rho map

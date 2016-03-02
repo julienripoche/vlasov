@@ -11,7 +11,7 @@ using namespace std;
 int main()
 {
     //Initialize random generator
-    srand48(time(NULL));
+    srand(time(NULL));
 
     //Initialize some constants
     double r0 = 1.12; //fm
@@ -27,6 +27,8 @@ int main()
     write(coords, "coords.gnu");
     write(momenta, "momenta.gnu");
 
+    //Check the relation between r and p
+    /*
     ofstream rpFile("rp.gnu");
     double rMod, pMod;
     for(int i=0 ; i<_NA_ ; i++)
@@ -35,6 +37,7 @@ int main()
         pMod = momenta[i][0]*momenta[i][0] + momenta[i][1]*momenta[i][1] + momenta[i][2]*momenta[i][2];
         rpFile << sqrt(rMod) << " " << sqrt(pMod) << endl;
     }
+    */
 
     return 0;
 }
