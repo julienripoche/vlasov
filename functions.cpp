@@ -9,6 +9,45 @@
 
 using namespace std;
 
+// Start WsRadiusFinder
+
+WsRadiusFinder::WsRadiusFinder(double a, double r) : a_ws(a), r_ws(r)
+{}
+
+double WsRadiusFinder::rho_ws(double r)
+{
+    double rho0 = 3./4/M_PI/pow(_R0_,3);
+    return rho0/(1+exp((r-this->r_ws)/this->a_ws));
+}
+
+double WsRadiusFinder::rho_integration()
+{
+    double step = this->a_ws/10;
+    double sum = 0;
+    double r_ws = 4;
+    double r_max = r_ws + 5 * a_ws;
+
+    for(double r=0 ; r<r_max ; r+=step)
+    {
+        sum += r * r * this->rho_ws(r);
+    }
+
+    cout << sum << endl;
+
+    sum *= 4*M_PI*step;
+
+    cout << "A = " << sum << endl;
+
+    return sum;
+}
+
+double WsRadiusFinder::run()
+{
+    return 1.;
+}
+
+// End WsRadiusFinder
+
 double alea()
 {
     return double(rand())/RAND_MAX;
@@ -32,9 +71,10 @@ void sphere(vector<vector<double> > &r, double radius_max)
 
 double rho_ws(double r)
 {
-    double R = _R0_ * pow(_A_, 1./3);
+    double r_ws = _R0_ * pow(_A_, 1./3);
     double rho0 = 3./4/M_PI/pow(_R0_,3);
-    return rho0/(1+exp((r-R)/2/_SIGMA_));
+    double a_ws = 2*_SIGMA_;
+    return rho0/(1+exp((r-r_ws)/a_ws));
 }
 
 void coords_generate(vector<vector<double> > &r, double radius_max)
@@ -213,7 +253,7 @@ void rho(vector<double> &rho_map, vector<vector<double> > &coords)
     //Divide by _N_
     for(int i=0 ; i<_BOX_NBR_*_BOX_NBR_*_BOX_NBR_ ; i++)
     {
-        rho_map[i] /= get_N(_SIGMA_);//_N_;
+        rho_map[i] /= _N_;// _N_*_N_*get_N(_SIGMA_);
     }
 
     //Loop over the grid

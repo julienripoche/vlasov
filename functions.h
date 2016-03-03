@@ -1,19 +1,6 @@
 #ifndef DEF_FUNCTIONS
 #define DEF_FUNCTIONS
 
-#define _A_ 56
-#define _N_ 1000
-#define _NA_ (_N_ * _A_)
-#define _SIGMA_ 0.5
-#define _SIGMA_NBR_ 3
-#define _BOX_NBR_ 40
-#define _L_ 20
-#define _L0_ (double) _L_ / _BOX_NBR_
-#define _R0_ 1.12
-#define _HBAR_C_ 197.3
-#define _M_ (double) (938.3 + 939.6) / 2
-#define _DT_ 0.1
-
 #include <iostream>
 #include <iomanip> //setprecision
 #include <cmath>
@@ -21,6 +8,20 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+
+#define _A_ 56
+#define _N_ 100
+#define _NA_ (_N_ * _A_)
+#define _SIGMA_ (double) 0.5
+#define _SIGMA_NBR_ 3
+#define _BOX_NBR_ 40
+#define _L_ 20
+#define _L0_ (double) _L_ / _BOX_NBR_
+#define _R0_ 1.12
+#define _HBAR_C_ 197.3
+#define _M_ ( 938.3 + 939.6) / 2
+#define _DT_ 0.5
+
 using namespace std;
 
 //Phase coordinates generator functions
@@ -47,5 +48,18 @@ void coords_generate(vector<vector<double> > &r, double radius_max);
 void momenta_generate(vector<vector<double> > &r, vector<vector<double> > &p);
 double rho_ws(double r);
 double fermi_momentum(double rho);
+
+class WsRadiusFinder
+{
+public:
+    WsRadiusFinder(double a, double r);
+    double rho_ws(double r);
+    double rho_integration();
+    double run();
+
+private:
+    double r_ws;
+    double a_ws;
+};
 
 #endif
