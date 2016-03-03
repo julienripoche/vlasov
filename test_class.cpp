@@ -6,16 +6,18 @@
 #include <ctime>
 #include <fstream>
 #include "functions.h"
+#include "wsRadius.h"
 
 using namespace std;
 
 int main()
 {
-    WsRadiusFinder WsRadius(0.001, 5);
+    double a_ws = _SIGMA_;
+    WsRadiusFinder WsRadius(a_ws);
 
-    cout << WsRadius.rho_ws(0) << endl;
-
+    //cout << WsRadius.rho_ws(6) << endl;
     //WsRadius.rho_integration();
+    cout << "radius = " << WsRadius.run() << endl;
 
     return 0;
 }

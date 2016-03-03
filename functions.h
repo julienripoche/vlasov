@@ -10,7 +10,7 @@
 #include <fstream>
 
 #define _A_ 56
-#define _N_ 100
+#define _N_ 500
 #define _NA_ (_N_ * _A_)
 #define _SIGMA_ (double) 0.5
 #define _SIGMA_NBR_ 3
@@ -48,18 +48,5 @@ void coords_generate(vector<vector<double> > &r, double radius_max);
 void momenta_generate(vector<vector<double> > &r, vector<vector<double> > &p);
 double rho_ws(double r);
 double fermi_momentum(double rho);
-
-class WsRadiusFinder
-{
-public:
-    WsRadiusFinder(double a, double r);
-    double rho_ws(double r);
-    double rho_integration();
-    double run();
-
-private:
-    double r_ws;
-    double a_ws;
-};
 
 #endif

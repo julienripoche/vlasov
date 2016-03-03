@@ -5,6 +5,7 @@
 #include <ctime>
 #include <fstream>
 #include "functions.h"
+#include "wsRadius.h"
 
 using namespace std;
 
@@ -13,8 +14,10 @@ int main()
     //Initialize random generator
     srand(time(NULL));
 
-    //Initialize some constants
-    double R = _R0_ * pow(_A_,1./3);
+    //Initialize ws radius
+    //double R = _R0_ * pow(_A_,1./3);
+    WsRadiusFinder WsRadius(_SIGMA_);
+    double R = WsRadius.run();
 
     //Initialize positions and momenta values
     vector<vector<double> > coords(_NA_, vector<double>(3));

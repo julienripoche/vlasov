@@ -9,45 +9,6 @@
 
 using namespace std;
 
-// Start WsRadiusFinder
-
-WsRadiusFinder::WsRadiusFinder(double a, double r) : a_ws(a), r_ws(r)
-{}
-
-double WsRadiusFinder::rho_ws(double r)
-{
-    double rho0 = 3./4/M_PI/pow(_R0_,3);
-    return rho0/(1+exp((r-this->r_ws)/this->a_ws));
-}
-
-double WsRadiusFinder::rho_integration()
-{
-    double step = this->a_ws/10;
-    double sum = 0;
-    double r_ws = 4;
-    double r_max = r_ws + 5 * a_ws;
-
-    for(double r=0 ; r<r_max ; r+=step)
-    {
-        sum += r * r * this->rho_ws(r);
-    }
-
-    cout << sum << endl;
-
-    sum *= 4*M_PI*step;
-
-    cout << "A = " << sum << endl;
-
-    return sum;
-}
-
-double WsRadiusFinder::run()
-{
-    return 1.;
-}
-
-// End WsRadiusFinder
-
 double alea()
 {
     return double(rand())/RAND_MAX;
@@ -187,24 +148,6 @@ double U(double rho)
     return (-356*rho/rho0 + 303*pow(rho/rho0,7./6));
 }
 
-double get_N(double a)
-{
-    double r0 = 1.12; //fm
-    double R = r0 * pow(_A_, 1./3);
-    double l = R/50;
-    double rho0 = 3./4/M_PI/pow(r0,3); //fm-3
-    double sum = 0;
-
-    for(double r=0 ; r<2*R ; r+=l)
-    {
-        sum += r * r * rho0/(1+exp((r-R)/a));
-    }
-
-    sum *= 4*M_PI*l;
-
-    return _NA_/sum;
-}
-
 void rho(vector<double> &rho_map, vector<vector<double> > &coords)
 {
     //Initialize some variables
@@ -253,30 +196,8 @@ void rho(vector<double> &rho_map, vector<vector<double> > &coords)
     //Divide by _N_
     for(int i=0 ; i<_BOX_NBR_*_BOX_NBR_*_BOX_NBR_ ; i++)
     {
-        rho_map[i] /= _N_;// _N_*_N_*get_N(_SIGMA_);
+        rho_map[i] /= _N_;
     }
-
-    //Loop over the grid
-/*
-    for(int x=0 ; x<_BOX_NBR_ ; x++)
-    {
-        r[0] = (x-_BOX_NBR_/2.)*l0;
-        for(int y=0 ; y<_BOX_NBR_ ; y++)
-        {
-            r[1] = (y-_BOX_NBR_/2.)*l0;
-            for(int z=0 ; z<_BOX_NBR_ ; z++)
-            {
-                rho_map[key(x,y,z,_BOX_NBR_)] = 0;
-                r[2] = (z-_BOX_NBR_/2.)*l0;
-                for(int i=0 ; i<_NA_ ; i++)
-                {
-                    rho_map[key(x,y,z,_BOX_NBR_)] += gaussian(r, coords[i]);
-                }
-                rho_map[key(x,y,z,_BOX_NBR_)] /= _N_;
-            }
-        }
-    }
-*/
 }
 
 void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> &r)
