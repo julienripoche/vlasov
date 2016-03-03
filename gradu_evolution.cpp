@@ -70,6 +70,9 @@ int main()
     double p_modulus;
     double r_rms;
     double p_rms;
+    double gradu_rms;
+    char densityFileName[50];
+    char ubarFileName[50];
 
     //Open file to write results
     ofstream partFile("particle.gnu");
@@ -80,6 +83,7 @@ int main()
         //Initialize r and p rms
         r_rms = 0;
         p_rms = 0;
+        gradu_rms = 0;
 
         //Loop over all test particles
         for(int j=0 ; j<_NA_ ; j++)
@@ -99,6 +103,40 @@ int main()
 
         rho(rho_map, r);
 
+        //Write density profile
+        sprintf(densityFileName, "density/density%d.gnu", i);
+        ofstream densityFile(densityFileName);
+        for(int i2=0 ; i2<_BOX_NBR_ ; i2++)
+        {
+            for(int j2=0 ; j2<_BOX_NBR_ ; j2++)
+            {
+                densityFile << i2*_L0_ << " " << j2*_L0_ << " " << rho_map[key(i2,j2,_BOX_NBR_/2,_BOX_NBR_)] << endl;
+            }
+            densityFile << endl;
+        }
+
+        //Write potential profile
+        sprintf(ubarFileName, "ubar/ubar%d.gnu", i);
+        ofstream ubarFile(ubarFileName);
+        vector<double> ubar_map(_BOX_NBR_*_BOX_NBR_*_BOX_NBR_,0);
+        vector<double> r0(3);
+        for(int i2=0 ; i2<_BOX_NBR_ ; i2++)
+        {
+            r0[0] = (i2-_BOX_NBR_/2.)*_L0_;
+            for(int j2=0 ; j2<_BOX_NBR_ ; j2++)
+            {
+                r0[1] = (j2-_BOX_NBR_/2.)*_L0_;
+
+                for(int k2=0 ; k2<_BOX_NBR_ ; k2++)
+                {
+                    r0[2] = (k2-_BOX_NBR_/2.)*_L0_;
+                    ubar_map[key(i2,j2,k2,_BOX_NBR_)] = get_ubar(rho_map, r0);
+                }
+                ubarFile << i2*_L0_ << " " << j2*_L0_ << " " << ubar_map[key(i2,j2,_BOX_NBR_/2,_BOX_NBR_)] << endl;
+            }
+            ubarFile << endl;
+        }
+
         for(int j=0 ; j<_NA_ ; j++)
         {
             minus_gradU(F[j], rho_map, r[j]);
@@ -111,6 +149,7 @@ int main()
                 //Rms
                 r_rms += r[j][k]*r[j][k];
                 p_rms += p[j][k]*p[j][k];
+                gradu_rms += F[j][k]*F[j][k];
 
                 //For one test particle
                 if(j==1)
@@ -131,7 +170,7 @@ int main()
         cout << i << "/" << n_ite << endl;
 
         //Write rms values in gnu files
-        rmsFile << i*_DT_ << " " << sqrt(r_rms/_NA_) << " " << sqrt(p_rms/_NA_) << endl;
+        rmsFile << i*_DT_ << " " << sqrt(r_rms/_NA_) << " " << sqrt(p_rms/_NA_) << " " << sqrt(gradu_rms/_NA_) << endl;
     }
 
     //Write the coordinates and momenta results in gnu files

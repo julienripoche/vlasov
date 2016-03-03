@@ -11,13 +11,7 @@ using namespace std;
 
 int main()
 {
-    //Initialize some constants
-    double m_proton = 938.3; //MeV
-    double m_neutron = 939.6; //MeV
-    double hbar_c = 197.3; //MeV.fm
-    double m = (m_proton+m_neutron)/2/hbar_c; //fm-1
-    double Dt = 0.01; //fm
-    double omega = 1.; //fm-1
+    double omega = 0.1; //fm-1
 
     //Initialize positions and momenta values
     vector<vector<double> > r;
@@ -31,7 +25,7 @@ int main()
     {
         for(int j=0 ; j<3 ; j++)
         {
-            F[i][j] = -m*omega*omega*r[i][j];
+            F[i][j] = -_M_*omega*omega*r[i][j];
         }
     }
 
@@ -43,8 +37,8 @@ int main()
     double p_rms;
 
     //Open file to write results
-    ofstream partFile("particle.gnu");
-    ofstream rmsFile("rms.gnu");
+    ofstream partFile("particle_harm.gnu");
+    ofstream rmsFile("rms_harm.gnu");
 
     for(int i=0 ; i<n_ite ; i++)
     {
@@ -63,10 +57,10 @@ int main()
             for(int k=0 ; k<3 ; k++)
             {
                 //Differential system resolution
-                p[j][k] += 1./2*F[j][k]*Dt;
-                r[j][k] += 1./m*p[j][k]*Dt;
-                F[j][k] = -m*omega*omega*r[j][k]; //Using harmonic oscillator
-                p[j][k] += 1./2*F[j][k]*Dt;
+                p[j][k] += 1./2*F[j][k]*_DT_;
+                r[j][k] += 1./_M_*p[j][k]*_DT_;
+                F[j][k] = -_M_*omega*omega*r[j][k]; //Using harmonic oscillator
+                p[j][k] += 1./2*F[j][k]*_DT_;
 
                 //Rms and total momentum calculation
                 r_rms += r[j][k]*r[j][k];
@@ -83,17 +77,17 @@ int main()
             //Write modulus of one test particle
             if(j==2)
             {
-                partFile << i*Dt << " " << sqrt(r_modulus) << " " << sqrt(p_modulus) << endl;
+                partFile << i*_DT_ << " " << sqrt(r_modulus) << " " << sqrt(p_modulus) << endl;
             }
         }
 
         //Write r and p rms
-        rmsFile << i*Dt << " " << sqrt(r_rms/_NA_) << " " << sqrt(p_rms/_NA_) << endl;
+        rmsFile << i*_DT_ << " " << sqrt(r_rms/_NA_) << " " << sqrt(p_rms/_NA_) << endl;
     }
 
     //Write the coordinates and momenta results in gnu files
-    write(r, "after_coords.gnu");
-    write(p, "after_momenta.gnu");
+    write(r, "after_coords_harm.gnu");
+    write(p, "after_momenta_harm.gnu");
 
     return 0;
 }

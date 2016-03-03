@@ -12,8 +12,8 @@ using namespace std;
 
 int main()
 {
-    double a_ws = _SIGMA_;
-    WsRadiusFinder WsRadius(a_ws);
+    //double a_ws = _SIGMA_;
+    WsRadiusFinder WsRadius;//(a_ws);
 
     //cout << WsRadius.rho_ws(6) << endl;
     //WsRadius.rho_integration();

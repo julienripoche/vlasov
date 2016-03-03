@@ -10,8 +10,9 @@
 
 using namespace std;
 
-WsRadiusFinder::WsRadiusFinder(double a) : a_ws(a)
+WsRadiusFinder::WsRadiusFinder()
 {
+    this->a_ws = _A_WS_;
     this->r_ws = 0;
     this->R = _R0_ * pow(_A_,1./3);
     this->rho0 = 3./4/M_PI/pow(_R0_,3);

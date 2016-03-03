@@ -34,8 +34,7 @@ double rho_ws(double r)
 {
     double r_ws = _R0_ * pow(_A_, 1./3);
     double rho0 = 3./4/M_PI/pow(_R0_,3);
-    double a_ws = _SIGMA_/2;
-    return rho0/(1+exp((r-r_ws)/a_ws));
+    return rho0/(1+exp((r-r_ws)/_A_WS_));
 }
 
 void coords_generate(vector<vector<double> > &r, double radius_max)
@@ -48,7 +47,7 @@ void coords_generate(vector<vector<double> > &r, double radius_max)
     {
         do // Accepté avec P=rho(r)/rho(0)
         {
-            radius = (radius_max+_SIGMA_)*pow(alea(),1./3);
+            radius = (radius_max+2*_A_WS_)*pow(alea(),1./3);
         }
         while(rho_ws(radius)/rho0 < alea());
         theta = acos(1-2*alea());
@@ -74,6 +73,7 @@ void momenta_generate(vector<vector<double> > &r, vector<vector<double> > &p)
     {
         pf = fermi_momentum(rho_ws(module(r[i])));
         radius = pf*pow(alea(),1./3);
+        radius /= 10; ////////////////////////////////////////
         theta = acos(1-2*alea());
         phi= 2*M_PI*alea();
         p[i][0] = radius*sin(theta)*cos(phi);
@@ -145,7 +145,7 @@ double gaussian(vector<double> &r_real, vector<double> &r_box)
 double U(double rho)
 {
     double rho0 = 3./4/M_PI/pow(_R0_,3); //fm-3
-    return (-356*rho/rho0 + 303*pow(rho/rho0,7./6));
+    return -356*rho/rho0 + 303*pow(rho/rho0,7./6);
 }
 
 void rho(vector<double> &rho_map, vector<vector<double> > &coords)
@@ -169,7 +169,7 @@ void rho(vector<double> &rho_map, vector<vector<double> > &coords)
         //Set origin to particle coordinates
         for(int j=0 ; j<3 ; j++)
         {
-            box_init[j] = floor(coords[i][j]/l0);
+            box_init[j] = floor(coords[i][j]/l0 + 0.5);
         }
 
         //Loop over considered cells
@@ -215,20 +215,20 @@ void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> 
     //Initialize box coordinates
     for(int i=0 ; i<3 ; i++)
     {
-        box_init[i] = floor(r[i]/l0);
+        box_init[i] = floor(r[i]/l0 + 0.5);
         gradu[i] = 0;
     }
 
     //Loop over considered cells
     for(int x=-nbr_cells ; x<=nbr_cells ; x++)
     {
-        box[0] = (box_init[0] + x + 0.5)*l0;
+        box[0] = (box_init[0] + x)*l0;
         for(int y=-nbr_cells ; y<=nbr_cells ; y++)
         {
-            box[1] = (box_init[1] + y + 0.5)*l0;
+            box[1] = (box_init[1] + y)*l0;
             for(int z=-nbr_cells ; z<=nbr_cells ; z++)
             {
-                box[2] = (box_init[2] + z + 0.5)*l0;
+                box[2] = (box_init[2] + z)*l0;
                 
                 gaus = gaussian(r, box);
 
@@ -238,9 +238,14 @@ void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> 
 
                 rho = rho_map[key(x1,y1,z1,_BOX_NBR_)];
 
-                gradu[0] += (r[0] - (box_init[0]+x+0.5)*l0) * gaus * U(rho);
-                gradu[1] += (r[1] - (box_init[1]+y+0.5)*l0) * gaus * U(rho);
-                gradu[2] += (r[2] - (box_init[2]+z+0.5)*l0) * gaus * U(rho);
+                gradu[0] += (r[0] - (box_init[0] + x)*l0) * gaus * U(rho);
+                gradu[1] += (r[1] - (box_init[1] + y)*l0) * gaus * U(rho);
+                gradu[2] += (r[2] - (box_init[2] + z)*l0) * gaus * U(rho);
+
+//                if(x==0 && y==0 && (z==0 || z==1))
+//                {
+//                    cout << r[0] << " " << (box_init[0] + x)*l0 << " " << gaus << " " << U(rho) << endl;
+//                }
             }
         }
     }
@@ -267,19 +272,19 @@ double get_ubar(vector<double> &rho_map, vector<double> &r)
     ubar = 0;
     for(int i=0 ; i<3 ; i++)
     {
-        box_init[i] = floor(r[i]/l0);
+        box_init[i] = floor(r[i]/l0 + 0.5);
     }
 
     //Loop over considered cells
     for(int x=-nbr_cells ; x<=nbr_cells ; x++)
     {
-        box[0] = (box_init[0] + x + 0.5)*l0;
+        box[0] = (box_init[0] + x)*l0;
         for(int y=-nbr_cells ; y<=nbr_cells ; y++)
         {
-            box[1] = (box_init[1] + y + 0.5)*l0;
+            box[1] = (box_init[1] + y)*l0;
             for(int z=-nbr_cells ; z<=nbr_cells ; z++)
             {
-                box[2] = (box_init[2] + z + 0.5)*l0;
+                box[2] = (box_init[2] + z)*l0;
                 gaus = gaussian(r, box);
 
                 //(... + box_nbr)%box_nbr; to avoid negative number

@@ -15,7 +15,7 @@ using namespace std;
 class WsRadiusFinder
 {
 public:
-    WsRadiusFinder(double a);
+    WsRadiusFinder();
     double rho_ws(double r);
     double rho_integration();
     double run();

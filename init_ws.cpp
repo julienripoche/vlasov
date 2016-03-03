@@ -16,7 +16,7 @@ int main()
 
     //Initialize ws radius
     //double R = _R0_ * pow(_A_,1./3);
-    WsRadiusFinder WsRadius(_SIGMA_/2);
+    WsRadiusFinder WsRadius;//_SIGMA_/2);
     double R = WsRadius.run();
 
     //Initialize positions and momenta values
@@ -32,12 +32,24 @@ int main()
     //Check the relation between r and p
     ofstream rpFile("rp.gnu");
     double rMod, pMod;
+    double px = 0;
+    double py = 0;
+    double pz = 0;
+    double ptot = 0;
     for(int i=0 ; i<_NA_ ; i++)
     {
         rMod = coords[i][0]*coords[i][0] + coords[i][1]*coords[i][1] + coords[i][2]*coords[i][2];
         pMod = momenta[i][0]*momenta[i][0] + momenta[i][1]*momenta[i][1] + momenta[i][2]*momenta[i][2];
         rpFile << sqrt(rMod) << " " << sqrt(pMod) << endl;
+
+        px += momenta[i][0];
+        py += momenta[i][1];
+        pz += momenta[i][2];
     }
+
+    ptot = sqrt(px*px + py*py + pz*pz)/_NA_;
+
+    cout << "px = " << px/_NA_ << " py = " << py/_NA_ << " pz = " << pz/_NA_ << " ptot = " << ptot <<  endl;
 
     return 0;
 }
