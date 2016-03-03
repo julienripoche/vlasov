@@ -16,7 +16,7 @@ int main()
 
     //Initialize ws radius
     //double R = _R0_ * pow(_A_,1./3);
-    WsRadiusFinder WsRadius(_SIGMA_);
+    WsRadiusFinder WsRadius(_SIGMA_/2);
     double R = WsRadius.run();
 
     //Initialize positions and momenta values

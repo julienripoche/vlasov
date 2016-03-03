@@ -34,7 +34,7 @@ double rho_ws(double r)
 {
     double r_ws = _R0_ * pow(_A_, 1./3);
     double rho0 = 3./4/M_PI/pow(_R0_,3);
-    double a_ws = 2*_SIGMA_;
+    double a_ws = _SIGMA_/2;
     return rho0/(1+exp((r-r_ws)/a_ws));
 }
 
@@ -48,7 +48,7 @@ void coords_generate(vector<vector<double> > &r, double radius_max)
     {
         do // Accepté avec P=rho(r)/rho(0)
         {
-            radius = radius_max*pow(alea(),1./3);
+            radius = (radius_max+_SIGMA_)*pow(alea(),1./3);
         }
         while(rho_ws(radius)/rho0 < alea());
         theta = acos(1-2*alea());

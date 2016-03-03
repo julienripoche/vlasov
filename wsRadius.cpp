@@ -45,6 +45,8 @@ double WsRadiusFinder::run()
     this->r_ws = (r_min + r_max)/2;
     double integral = this->rho_integration();
 
+    cout << integral << " " << this->r_ws << endl;
+
     while(abs(integral-_A_)/_A_ > 1e-5)
     {
         if(integral > _A_)
@@ -60,6 +62,8 @@ double WsRadiusFinder::run()
             cout << endl;
         }
         integral = this->rho_integration();
+
+        cout << integral << " " << this->r_ws << endl;
     }
 
     return this->r_ws;
