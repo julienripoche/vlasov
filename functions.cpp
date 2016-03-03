@@ -45,7 +45,7 @@ void coords_generate(vector<vector<double> > &r, double radius_max)
 
     for(int i=0 ; i<nbr_points ; i++)
     {
-        do // Accepté avec P=rho(r)/rho(0)
+        do // Accepté avec proba P=rho(r)/rho(0)
         {
             radius = (radius_max+2*_A_WS_)*pow(alea(),1./3);
         }
@@ -73,7 +73,6 @@ void momenta_generate(vector<vector<double> > &r, vector<vector<double> > &p)
     {
         pf = fermi_momentum(rho_ws(module(r[i])));
         radius = pf*pow(alea(),1./3);
-        radius /= 10; ////////////////////////////////////////
         theta = acos(1-2*alea());
         phi= 2*M_PI*alea();
         p[i][0] = radius*sin(theta)*cos(phi);
@@ -183,6 +182,10 @@ void rho(vector<double> &rho_map, vector<vector<double> > &coords)
                 {
                     r[2] = (box_init[2] + z)*l0;
 
+                    //Coordinates on the grid
+                    // _BOX_NBR_/2 to go on the middle of the grid
+                    // +_BOX_NBR_ to avoid segmentation fault (always positive)
+                    // %_BOX_NBR_ to avoid segmentation fault (always in the proper range)
                     x1 = (box_init[0] + x + _BOX_NBR_/2 + _BOX_NBR_) % _BOX_NBR_;
                     y1 = (box_init[1] + y + _BOX_NBR_/2 + _BOX_NBR_) % _BOX_NBR_;
                     z1 = (box_init[2] + z + _BOX_NBR_/2 + _BOX_NBR_) % _BOX_NBR_;
@@ -190,7 +193,7 @@ void rho(vector<double> &rho_map, vector<vector<double> > &coords)
                     rho_map[key(x1,y1,z1,_BOX_NBR_)] += gaussian(r, coords[i]);
                 }
             }
-         }
+        }
     }
 
     //Divide by _N_
@@ -205,11 +208,10 @@ void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> 
     //Define some useful variables
     double l0 = _L0_;
     double gaus;
-    double rho;
+    double pot;
     int box_init[3];
     vector<double> box(3);
     int nbr_cells = floor(_SIGMA_NBR_*_SIGMA_/l0);
-
     int x1, y1, z1;
 
     //Initialize box coordinates
@@ -236,16 +238,11 @@ void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> 
                 y1 = (box_init[1] + y + _BOX_NBR_/2 + _BOX_NBR_) % _BOX_NBR_;
                 z1 = (box_init[2] + z + _BOX_NBR_/2 + _BOX_NBR_) % _BOX_NBR_;
 
-                rho = rho_map[key(x1,y1,z1,_BOX_NBR_)];
+                pot = U(rho_map[key(x1,y1,z1,_BOX_NBR_)]);
 
-                gradu[0] += (r[0] - (box_init[0] + x)*l0) * gaus * U(rho);
-                gradu[1] += (r[1] - (box_init[1] + y)*l0) * gaus * U(rho);
-                gradu[2] += (r[2] - (box_init[2] + z)*l0) * gaus * U(rho);
-
-//                if(x==0 && y==0 && (z==0 || z==1))
-//                {
-//                    cout << r[0] << " " << (box_init[0] + x)*l0 << " " << gaus << " " << U(rho) << endl;
-//                }
+                gradu[0] += (r[0] - box[0]) * gaus * pot;
+                gradu[1] += (r[1] - box[1]) * gaus * pot;
+                gradu[2] += (r[2] - box[2]) * gaus * pot;
             }
         }
     }

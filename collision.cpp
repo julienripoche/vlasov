@@ -13,39 +13,37 @@ using namespace std;
 // RHO MAP NOT FREEZED
 //*************************
 
-void plotGradiant(vector<double> &rho_map)
-{
-    ofstream gradFile("grad.gnu");
-    vector<double> r(3);
-    vector<double> gradu(3);
-    double x1;
-
-    r[1] = 0;
-    r[2] = 0;
-
-    for(int i=-5000 ; i<5000 ; i++)
-    {
-        r[0] = i *_L0_ * _BOX_NBR_ / 10000;
-        minus_gradU(gradu, rho_map, r);
-        gradFile << r[0] << " " << " " << gradu[0] << endl;
-    }
-}
-
 int main()
 {
-    //Initialize positions and momenta values
+    //Initialize positions and momenta values for particle 1
     vector<vector<double> > r;
     vector<vector<double> > p;
     read(r, "coords.gnu");
     read(p, "momenta.gnu");
 
+    //Initialize positions and momenta values for particle 2
+    vector<vector<double> > r2;
+    vector<vector<double> > p2;
+    read(r2, "coords2.gnu");
+    read(p2, "momenta2.gnu");
+
+    //Add particle 2 values to particle 1 vectors
+    int size = r2.size();
+    for(int i=0 ; i<size ; i++)
+    {
+        r.push_back(r2[i]);
+        p.push_back(p2[i]);
+    }
+    
+    cout << "copy " << r.size() << " " << p.size() << endl;
+
+    return 0;
+
+    cout << "elsewhere" << endl;
+
     //Initialize rho map
-    vector<double> rho_map(_BOX_NBR_*_BOX_NBR_*_BOX_NBR_,0);
-    rho(rho_map, r);
-
-    plotGradiant(rho_map);
-
-    cout << "end end end " << endl;
+    vector<double> rho_map(_BOX_NBR_X_*_BOX_NBR_Y_*_BOX_NBR_Z_,0);
+    //rho2(rho_map, r);
 
     double px = 0;
     double py = 0;

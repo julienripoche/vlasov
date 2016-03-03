@@ -5,21 +5,16 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
-#include "functions.h"
 
 using namespace std;
 
 int main()
 {
-    int i = 1;
-    char fileName[50];
-    sprintf(fileName, "file%d", i);
-    cout << fileName << endl;
-
-    string begin("aaa");
-    string end("bbb");
-
-    cout << begin + string(i) + end << endl;
-
+    int number;
+    for(int i=0 ; i<10 ; i++)
+    {
+        cin >> number;
+        cout << number%10 << endl;
+    } 
     return 0;
 }
