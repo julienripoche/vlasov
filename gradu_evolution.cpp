@@ -58,28 +58,21 @@ int main()
     {
         for(int j=0 ; j<_BOX_NBR_ ; j++)
         {
-            densityFile << i*_L0_ << " " << j*_L0_ << " " << rho_map[key(i,j,_BOX_NBR_/2,_BOX_NBR_)] << endl;
+            densityFile << i*_L0_ << " " << j*_L0_ << " " << rho_map[key(i,_BOX_NBR_/2,j,_BOX_NBR_)] << endl;
         }
         densityFile << endl;
     }
 
     //Write potential profile in "ubar.gnu" 
     ofstream ubarFile("ubar.gnu");
-    vector<double> ubar_map(_BOX_NBR_*_BOX_NBR_*_BOX_NBR_,0);
-    vector<double> r0(3);
+    vector<double> r0(3,0);
     for(int i=0 ; i<_BOX_NBR_ ; i++)
     {
         r0[0] = (i-_BOX_NBR_/2.)*_L0_;
         for(int j=0 ; j<_BOX_NBR_ ; j++)
         {
             r0[1] = (j-_BOX_NBR_/2.)*_L0_;
-            
-            for(int k=0 ; k<_BOX_NBR_ ; k++)
-            {
-                r0[2] = (k-_BOX_NBR_/2.)*_L0_;
-                ubar_map[key(i,j,k,_BOX_NBR_)] = get_ubar(rho_map, r0);
-            }
-            ubarFile << i*_L0_ << " " << j*_L0_ << " " << ubar_map[key(i,j,_BOX_NBR_/2,_BOX_NBR_)] << endl;
+            ubarFile << i*_L0_ << " " << j*_L0_ << " " << get_ubar(rho_map, r0) << endl;
         }
         ubarFile << endl;
     }
@@ -144,35 +137,6 @@ int main()
             densityFile << endl;
         }
 
-        /*
-        //Write potential profile
-        sprintf(ubarFileName, "ubar/ubar%d.gnu", i);
-        ofstream ubarFile(ubarFileName);
-        vector<double> ubar_map(_BOX_NBR_*_BOX_NBR_*_BOX_NBR_,0);
-        vector<double> r0(3);
-        for(int i2=0 ; i2<_BOX_NBR_ ; i2++)
-        {
-            r0[0] = (i2-_BOX_NBR_/2.)*_L0_;
-            for(int j2=0 ; j2<_BOX_NBR_ ; j2++)
-            {
-                r0[1] = (j2-_BOX_NBR_/2.)*_L0_;
-
-                for(int k2=0 ; k2<_BOX_NBR_ ; k2++)
-                {
-                    r0[2] = (k2-_BOX_NBR_/2.)*_L0_;
-                    ubar_map[key(i2,j2,k2,_BOX_NBR_)] = get_ubar(rho_map, r0);
-                }
-                ubarFile << i2*_L0_ << " " << j2*_L0_ << " " << ubar_map[key(i2,j2,_BOX_NBR_/2,_BOX_NBR_)] << endl;
-            }
-            ubarFile << endl;
-        }
-        */
-
-        px = 0;
-        py = 0;
-        pz = 0;
-        ptot = 0;
-
         for(int j=0 ; j<_NA_ ; j++)
         {
             minus_gradU(F[j], rho_map, r[j]);
@@ -196,27 +160,12 @@ int main()
                 }
             }
 
-            px += p[i][0];
-            py += p[i][1];
-            pz += p[i][2];
-
-            //For one test particle
-            if(j==1 && i%5==0)
-            {
-                //cout << "x = " << r[j][0] << "  y = " << r[j][1] << "  z = " << r[j][2] << endl;
-                //cout << "px = " << p[j][0] << " py = " << p[j][1] << " pz = " << p[j][2] << endl;
-                //cout << "Fx = " << F[j][0] << " Fy = " << F[j][1] << " Fz = " << F[j][2] << endl;
-            }
-
             //Write modulus of one test particle
             if(j==1)
             {
                 partFile << i*_DT_ << " " << sqrt(r_modulus) << " " << sqrt(p_modulus) << " " << sqrt(gradu_modulus) << endl;
             }
         }
-
-        ptot = sqrt(px*px + py*py + pz*pz)/_NA_;
-        //cout << "px = " << px/_NA_ << " py = " << py/_NA_ << " pz = " << pz/_NA_ << " ptot = " << ptot <<  endl;
 
         //To follow the progession of the evolution
         cout << i << "/" << n_ite << endl;
