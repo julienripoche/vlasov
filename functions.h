@@ -10,10 +10,10 @@
 #include <fstream>
 
 #define _A_ 56
-#define _N_ 100
+#define _N_ 500
 #define _NA_ (_N_ * _A_)
 #define _SIGMA_ (double) 0.5
-#define _SIGMA_NBR_ 3
+#define _SIGMA_NBR_ 2
 #define _BOX_NBR_ 40
 #define _L_ 20
 #define _BOX_NBR_X_ 40
@@ -26,8 +26,10 @@
 #define _R0_ 1.12
 #define _HBAR_C_ 197.3
 #define _M_ ( 938.3 + 939.6) / 2
-#define _DT_ 0.5
+#define _DT_ 2
 #define _A_WS_ (double) _SIGMA_
+
+// careful to have the same l0 in all directions
 
 using namespace std;
 
@@ -45,6 +47,7 @@ void read(vector<vector<double> > &data, string const nomFichier);
 
 //Useful functions
 int key(int x, int y, int z, int N);
+int key2(int x, int y, int z);
 double module(vector<double> &r);
 double vect_module(vector<double> &r_real, vector<double> &r_box);
 double gaussian(vector<double> &r_real, vector<double> &r_box);
