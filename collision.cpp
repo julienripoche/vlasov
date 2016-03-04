@@ -21,76 +21,68 @@ int main()
     read(r, "coords.gnu");
     read(p, "momenta.gnu");
 
+    int part1_size = r.size();
+    for(int i=0 ; i<part1_size ; i++)
+    {
+        r[i][2] += 10;
+        p[i][2] -= 50;
+    }
+
     //Initialize positions and momenta values for particle 2
     vector<vector<double> > r2;
     vector<vector<double> > p2;
     read(r2, "coords2.gnu");
     read(p2, "momenta2.gnu");
 
-    //Add particle 2 values to particle 1 vectors
-    int size = r2.size();
-    for(int i=0 ; i<size ; i++)
+    int part2_size = r2.size();
+    for(int i=0 ; i<part2_size ; i++)
     {
+        r2[i][2] -= 10;
+        p2[i][2] += 50;
         r.push_back(r2[i]);
         p.push_back(p2[i]);
     }
-    
-    cout << "copy " << r.size() << " " << p.size() << endl;
 
-    return 0;
-
-    cout << "elsewhere" << endl;
+    int part_nbr = r.size();
 
     //Initialize rho map
     vector<double> rho_map(_BOX_NBR_X_*_BOX_NBR_Y_*_BOX_NBR_Z_,0);
-    //rho2(rho_map, r);
-
-    double px = 0;
-    double py = 0;
-    double pz = 0;
-    double ptot = 0;
+    rho(rho_map, r);
 
     //Write density profile in "density.gnu"
     ofstream densityFile("density.gnu");
-    for(int i=0 ; i<_BOX_NBR_ ; i++)
+    for(int i=0 ; i<_BOX_NBR_Y_ ; i++)
     {
-        for(int j=0 ; j<_BOX_NBR_ ; j++)
+        for(int j=0 ; j<_BOX_NBR_Z_ ; j++)
         {
-            densityFile << i*_L0_ << " " << j*_L0_ << " " << rho_map[key(i,j,_BOX_NBR_/2,_BOX_NBR_)] << endl;
+            densityFile << i*_L0_ << " " << j*_L0_ << " " << rho_map[key2(_BOX_NBR_X_/2,i,j)] << endl;
         }
         densityFile << endl;
     }
 
     //Write potential profile in "ubar.gnu" 
     ofstream ubarFile("ubar.gnu");
-    vector<double> ubar_map(_BOX_NBR_*_BOX_NBR_*_BOX_NBR_,0);
-    vector<double> r0(3);
+    vector<double> r0(3,0);
     for(int i=0 ; i<_BOX_NBR_ ; i++)
     {
         r0[0] = (i-_BOX_NBR_/2.)*_L0_;
         for(int j=0 ; j<_BOX_NBR_ ; j++)
         {
             r0[1] = (j-_BOX_NBR_/2.)*_L0_;
-            
-            for(int k=0 ; k<_BOX_NBR_ ; k++)
-            {
-                r0[2] = (k-_BOX_NBR_/2.)*_L0_;
-                ubar_map[key(i,j,k,_BOX_NBR_)] = get_ubar(rho_map, r0);
-            }
-            ubarFile << i*_L0_ << " " << j*_L0_ << " " << ubar_map[key(i,j,_BOX_NBR_/2,_BOX_NBR_)] << endl;
+            ubarFile << i*_L0_ << " " << j*_L0_ << " " << get_ubar(rho_map, r0) << endl;
         }
         ubarFile << endl;
     }
 
     //Initialize strength
-    vector<vector<double> > F(_NA_, vector<double>(3,0));
-    for(int i=0 ; i<_NA_ ; i++)
+    vector<vector<double> > F(part_nbr, vector<double>(3,0));
+    for(int i=0 ; i<part_nbr ; i++)
     {
         minus_gradU(F[i], rho_map, r[i]);
     }
 
     // Initialize useful variables
-    int n_ite = 1000;
+    int n_ite = 2000;
     double r_modulus;
     double p_modulus;
     double gradu_modulus;
@@ -112,7 +104,7 @@ int main()
         gradu_rms = 0;
 
         //Loop over all test particles
-        for(int j=0 ; j<_NA_ ; j++)
+        for(int j=0 ; j<part_nbr ; j++)
         {
             //Initialize r and p modulus value
             r_modulus = 0;
@@ -131,15 +123,18 @@ int main()
         rho(rho_map, r);
 
         //Write density profile
-        sprintf(densityFileName, "density/density%d.gnu", i);
-        ofstream densityFile(densityFileName);
-        for(int i2=0 ; i2<_BOX_NBR_ ; i2++)
+        if(i%10==0)
         {
-            for(int j2=0 ; j2<_BOX_NBR_ ; j2++)
+        sprintf(densityFileName, "density/density%d.gnu", i/10);
+        ofstream densityFile(densityFileName);
+        for(int i2=0 ; i2<_BOX_NBR_Y_ ; i2++)
+        {
+            for(int j2=0 ; j2<_BOX_NBR_Z_ ; j2++)
             {
-                densityFile << i2*_L0_ << " " << j2*_L0_ << " " << rho_map[key(i2,j2,_BOX_NBR_/2,_BOX_NBR_)] << endl;
+                densityFile << i2*_L0_ << " " << j2*_L0_ << " " << rho_map[key2(_BOX_NBR_X_/2,i2,j2)] << endl;
             }
             densityFile << endl;
+        }
         }
 
         /*
@@ -166,12 +161,7 @@ int main()
         }
         */
 
-        px = 0;
-        py = 0;
-        pz = 0;
-        ptot = 0;
-
-        for(int j=0 ; j<_NA_ ; j++)
+        for(int j=0 ; j<part_nbr ; j++)
         {
             minus_gradU(F[j], rho_map, r[j]);
 
@@ -180,10 +170,20 @@ int main()
             { 
                 p[j][k] += 1./2*F[j][k]*_DT_;
 
-                //Rms
-                r_rms += r[j][k]*r[j][k];
-                p_rms += p[j][k]*p[j][k];
-                gradu_rms += F[j][k]*F[j][k];
+                //Rms first particle
+                if(j<_NA_)
+                {
+                    if(k==2)
+                    {
+                        r_rms += (r[j][k]-10)*(r[j][k]-10);
+                    }
+                    else
+                    {
+                        r_rms += r[j][k]*r[j][k];
+                    }
+                    p_rms += p[j][k]*p[j][k];
+                    gradu_rms += F[j][k]*F[j][k];
+                }
 
                 //For one test particle
                 if(j==1)
@@ -194,18 +194,6 @@ int main()
                 }
             }
 
-            px += p[i][0];
-            py += p[i][1];
-            pz += p[i][2];
-
-            //For one test particle
-            if(j==1 && i%5==0)
-            {
-                //cout << "x = " << r[j][0] << "  y = " << r[j][1] << "  z = " << r[j][2] << endl;
-                //cout << "px = " << p[j][0] << " py = " << p[j][1] << " pz = " << p[j][2] << endl;
-                //cout << "Fx = " << F[j][0] << " Fy = " << F[j][1] << " Fz = " << F[j][2] << endl;
-            }
-
             //Write modulus of one test particle
             if(j==1)
             {
@@ -213,14 +201,11 @@ int main()
             }
         }
 
-        ptot = sqrt(px*px + py*py + pz*pz)/_NA_;
-        //cout << "px = " << px/_NA_ << " py = " << py/_NA_ << " pz = " << pz/_NA_ << " ptot = " << ptot <<  endl;
-
         //To follow the progession of the evolution
         cout << i << "/" << n_ite << endl;
 
         //Write rms values in gnu files
-        rmsFile << i*_DT_ << " " << sqrt(r_rms/_NA_) << " " << sqrt(p_rms/_NA_) << " " << sqrt(gradu_rms/_NA_) << endl;
+        rmsFile << i*_DT_ << " " << sqrt(r_rms/part_nbr) << " " << sqrt(p_rms/part_nbr) << " " << sqrt(gradu_rms/part_nbr) << endl;
     }
 
     //Write the coordinates and momenta results in gnu files
