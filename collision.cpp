@@ -76,10 +76,13 @@ int main()
 
     //Initialize strength
     vector<vector<double> > F(part_nbr, vector<double>(3,0));
-    for(int i=0 ; i<part_nbr ; i++)
+
+    minus_gradU2(F, rho_map, r);
+
+    /*for(int i=0 ; i<part_nbr ; i++)
     {
         minus_gradU(F[i], rho_map, r[i]);
-    }
+    }*/
 
     // Initialize useful variables
     int n_ite = 2000;
@@ -90,7 +93,6 @@ int main()
     double p_rms;
     double gradu_rms;
     char densityFileName[50];
-    char ubarFileName[50];
 
     //Open file to write results
     ofstream partFile("particle.gnu");
@@ -123,9 +125,9 @@ int main()
         rho(rho_map, r);
 
         //Write density profile
-        if(i%10==0)
+        if(i%3==0)
         {
-        sprintf(densityFileName, "density/density%d.gnu", i/10);
+        sprintf(densityFileName, "density/density%d.gnu", i/3);
         ofstream densityFile(densityFileName);
         for(int i2=0 ; i2<_BOX_NBR_Y_ ; i2++)
         {
@@ -161,9 +163,13 @@ int main()
         }
         */
 
+        //cout << "In collision.gpp: " << F.size() << endl;
+
+        minus_gradU2(F, rho_map, r);
+
         for(int j=0 ; j<part_nbr ; j++)
         {
-            minus_gradU(F[j], rho_map, r[j]);
+            //minus_gradU(F[j], rho_map, r[j]);
 
             //Loop over cartesian coordinates
             for(int k=0 ; k<3 ; k++)

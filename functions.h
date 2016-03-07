@@ -56,6 +56,7 @@ double U(double rho);
 //Evolution functions
 void rho(vector<double> &rho_map, vector<vector<double> > &coords);
 void minus_gradU(vector<double> &gradu, vector<double> &rho_map, vector<double> &r);
+void minus_gradU2(vector<vector<double> > &F, vector<double> &rho_map, vector<vector<double> > &r);
 double get_ubar(vector<double> &rho_map, vector<double> &r);
 
 #endif
