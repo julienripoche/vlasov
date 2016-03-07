@@ -27,6 +27,7 @@ int main()
     write(coords, "coords.gnu");
     write(momenta, "momenta.gnu");
 
+    //Get momenta modulus as function of position modulus
     ofstream rpFile("rp.gnu");
     double rMod, pMod;
     for(int i=0 ; i<_NA_ ; i++)

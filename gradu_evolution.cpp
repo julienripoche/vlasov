@@ -18,7 +18,6 @@ void plotGradiant(vector<double> &rho_map)
     ofstream gradFile("grad.gnu");
     vector<double> r(3);
     vector<double> gradu(3);
-    double x1;
 
     r[1] = 0;
     r[2] = 0;
@@ -44,13 +43,6 @@ int main()
     rho(rho_map, r);
 
     //plotGradiant(rho_map);
-
-    //cout << "end end end " << endl;
-
-    double px = 0;
-    double py = 0;
-    double pz = 0;
-    double ptot = 0;
 
     //Write density profile in "density.gnu"
     ofstream densityFile("density.gnu");
@@ -93,7 +85,6 @@ int main()
     double p_rms;
     double gradu_rms;
     char densityFileName[50];
-    char ubarFileName[50];
 
     //Open file to write results
     ofstream partFile("particle.gnu");

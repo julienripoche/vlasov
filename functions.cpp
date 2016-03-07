@@ -16,18 +16,7 @@ double alea()
 
 void sphere(vector<vector<double> > &r, double radius_max)
 {
-    //double radius, theta, phi;
     int nbr_points = r.size();
-
-    /*for(int i=0 ; i<nbr_points ; i++)
-    {
-        radius = radius_max*pow(alea(),1./3);
-        theta = acos(1-2*alea());
-        phi= 2*M_PI*alea();
-        r[i][0] = radius*sin(theta)*cos(phi);
-        r[i][1] = radius*sin(theta)*sin(phi);
-        r[i][2] = radius*cos(theta);
-    }*/
 
     for(int i=0 ; i<nbr_points ; i++)
     {
@@ -52,22 +41,8 @@ void coords_generate(vector<vector<double> > &r, double radius_max)
     double rho0 = 3./4/M_PI/pow(_R0_,3);
     double radius, theta, phi;
     int nbr_points = r.size();
-
-    /*for(int i=0 ; i<nbr_points ; i++)
-    {
-        do // Accepté avec proba P=rho(r)/rho(0)
-        {
-            radius = (radius_max+5*_A_WS_)*pow(alea(),1./3);
-        }
-        while(rho_ws(radius)/rho0 < alea());
-        theta = acos(1-2*alea());
-        phi= 2*M_PI*alea();
-        r[i][0] = radius*sin(theta)*cos(phi);
-        r[i][1] = radius*sin(theta)*sin(phi);
-        r[i][2] = radius*cos(theta);
-    }*/
-
     int counts = 0;
+
     for(int i=0 ; i<10*nbr_points ; i++)
     {
         radius = (radius_max+2*_A_WS_)*pow(alea(),1./3);
@@ -327,49 +302,49 @@ void minus_gradU2(vector<vector<double> > &gradu, vector<double> &rho_map, vecto
     for(int ipart=0 ; ipart<part_nbr ; ipart++)
     {
 
-    //Initialize box coordinates
-    for(int i=0 ; i<3 ; i++)
-    {
-        box_init[i] = floor(r[ipart][i]/l0 + 0.5);
-        gradu[ipart][i] = 0;
-    }
-
-    //Get position on cells and gaussian values
-    for(int x=-nbr_cells ; x<=nbr_cells ; x++)
-    {
-        for(int j=0 ; j<3 ; j++)
+        //Initialize box coordinates
+        for(int i=0 ; i<3 ; i++)
         {
-            r_box[x+nbr_cells][j] = (box_init[j] + x)*l0;
-            gaus[x+nbr_cells][j] = simple_gaussian(r[ipart][j], r_box[x+nbr_cells][j]);
+            box_init[i] = floor(r[ipart][i]/l0 + 0.5);
+            gradu[ipart][i] = 0;
         }
-    }
 
-    //Loop over considered cells
-    for(int x=-nbr_cells ; x<=nbr_cells ; x++)
-    {
-        for(int y=-nbr_cells ; y<=nbr_cells ; y++)
+        //Get position on cells and gaussian values
+        for(int x=-nbr_cells ; x<=nbr_cells ; x++)
         {
-            for(int z=-nbr_cells ; z<=nbr_cells ; z++)
+            for(int j=0 ; j<3 ; j++)
             {
-                gaus_tot = gaus[x+nbr_cells][0]*gaus[y+nbr_cells][1]*gaus[z+nbr_cells][2];
-
-                x1 = (box_init[0] + x + _BOX_NBR_X_/2 + _BOX_NBR_X_) % _BOX_NBR_X_;
-                y1 = (box_init[1] + y + _BOX_NBR_Y_/2 + _BOX_NBR_Y_) % _BOX_NBR_Y_;
-                z1 = (box_init[2] + z + _BOX_NBR_Z_/2 + _BOX_NBR_Z_) % _BOX_NBR_Z_;
-
-                pot = U(rho_map[key2(x1,y1,z1)]);
-
-                gradu[ipart][0] += (r[ipart][0] - r_box[x+nbr_cells][0]) * gaus_tot * pot;
-                gradu[ipart][1] += (r[ipart][1] - r_box[y+nbr_cells][1]) * gaus_tot * pot;
-                gradu[ipart][2] += (r[ipart][2] - r_box[z+nbr_cells][2]) * gaus_tot * pot;
+                r_box[x+nbr_cells][j] = (box_init[j] + x)*l0;
+                gaus[x+nbr_cells][j] = simple_gaussian(r[ipart][j], r_box[x+nbr_cells][j]);
             }
         }
-    }
 
-    for(int i=0 ; i<3 ; i++)
-    {
-        gradu[ipart][i] *= l0*l0*l0/_SIGMA_/_SIGMA_;
-    }
+        //Loop over considered cells
+        for(int x=-nbr_cells ; x<=nbr_cells ; x++)
+        {
+            for(int y=-nbr_cells ; y<=nbr_cells ; y++)
+            {
+                for(int z=-nbr_cells ; z<=nbr_cells ; z++)
+                {
+                    gaus_tot = gaus[x+nbr_cells][0]*gaus[y+nbr_cells][1]*gaus[z+nbr_cells][2];
+
+                    x1 = (box_init[0] + x + _BOX_NBR_X_/2 + _BOX_NBR_X_) % _BOX_NBR_X_;
+                    y1 = (box_init[1] + y + _BOX_NBR_Y_/2 + _BOX_NBR_Y_) % _BOX_NBR_Y_;
+                    z1 = (box_init[2] + z + _BOX_NBR_Z_/2 + _BOX_NBR_Z_) % _BOX_NBR_Z_;
+
+                    pot = U(rho_map[key2(x1,y1,z1)]);
+
+                    gradu[ipart][0] += (r[ipart][0] - r_box[x+nbr_cells][0]) * gaus_tot * pot;
+                    gradu[ipart][1] += (r[ipart][1] - r_box[y+nbr_cells][1]) * gaus_tot * pot;
+                    gradu[ipart][2] += (r[ipart][2] - r_box[z+nbr_cells][2]) * gaus_tot * pot;
+                }
+            }
+        }
+
+        for(int i=0 ; i<3 ; i++)
+        {
+            gradu[ipart][i] *= l0*l0*l0/_SIGMA_/_SIGMA_;
+        }
 
     }
 }
