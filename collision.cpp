@@ -151,7 +151,6 @@ int main()
             for(int j2=0 ; j2<_BOX_NBR_ ; j2++)
             {
                 r0[1] = (j2-_BOX_NBR_/2.)*_L0_;
-
                 for(int k2=0 ; k2<_BOX_NBR_ ; k2++)
                 {
                     r0[2] = (k2-_BOX_NBR_/2.)*_L0_;
