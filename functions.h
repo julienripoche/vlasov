@@ -13,20 +13,20 @@
 #define _N_ 500
 #define _NA_ (_N_ * _A_)
 #define _SIGMA_ (double) 0.5
-#define _SIGMA_NBR_ 2
+#define _SIGMA_NBR_ 3.1
 #define _BOX_NBR_ 40
-#define _L_ 20
+#define _L_ 20.
 #define _BOX_NBR_X_ 40
 #define _BOX_NBR_Y_ 40
 #define _BOX_NBR_Z_ 80
-#define _L_X_ 20
-#define _L_Y_ 20
-#define _L_Z_ 40
+#define _L_X_ 20.
+#define _L_Y_ 20.
+#define _L_Z_ 40.
 #define _L0_ (double) _L_ / _BOX_NBR_
 #define _R0_ 1.12
 #define _HBAR_C_ 197.3
 #define _M_ ( 938.3 + 939.6) / 2
-#define _DT_ 2
+#define _DT_ 2.
 #define _A_WS_ (double) _SIGMA_
 
 // careful to have the same l0 in all directions
