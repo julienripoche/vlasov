@@ -40,12 +40,12 @@ int main()
     read(p, "momenta.gnu");
 
     //Initialize rho map
-    vector<double> rho_map(_BOX_NBR_*_BOX_NBR_*_BOX_NBR_,0);
+    vector<double> rho_map(_BOX_NBR_X_*_BOX_NBR_Y_*_BOX_NBR_Z_,0);
     rho(rho_map, r);
 
-    plotGradiant(rho_map);
+    //plotGradiant(rho_map);
 
-    cout << "end end end " << endl;
+    //cout << "end end end " << endl;
 
     double px = 0;
     double py = 0;
@@ -54,17 +54,17 @@ int main()
 
     //Write density profile in "density.gnu"
     ofstream densityFile("density.gnu");
-    for(int i=0 ; i<_BOX_NBR_ ; i++)
+    for(int i=0 ; i<_BOX_NBR_X_ ; i++)
     {
-        for(int j=0 ; j<_BOX_NBR_ ; j++)
+        for(int j=0 ; j<_BOX_NBR_Z_ ; j++)
         {
-            densityFile << i*_L0_ << " " << j*_L0_ << " " << rho_map[key(i,_BOX_NBR_/2,j,_BOX_NBR_)] << endl;
+            densityFile << i*_L0_ << " " << j*_L0_ << " " << rho_map[key2(i,_BOX_NBR_Y_/2,j)] << endl;
         }
         densityFile << endl;
     }
 
     //Write potential profile in "ubar.gnu" 
-    ofstream ubarFile("ubar.gnu");
+    /*ofstream ubarFile("ubar.gnu");
     vector<double> r0(3,0);
     for(int i=0 ; i<_BOX_NBR_ ; i++)
     {
@@ -75,7 +75,7 @@ int main()
             ubarFile << i*_L0_ << " " << j*_L0_ << " " << get_ubar(rho_map, r0) << endl;
         }
         ubarFile << endl;
-    }
+    }*/
 
     //Initialize strength
     vector<vector<double> > F(_NA_, vector<double>(3,0));
@@ -128,11 +128,11 @@ int main()
         //Write density profile
         sprintf(densityFileName, "density/density%d.gnu", i);
         ofstream densityFile(densityFileName);
-        for(int i2=0 ; i2<_BOX_NBR_ ; i2++)
+        for(int i2=0 ; i2<_BOX_NBR_X_ ; i2++)
         {
-            for(int j2=0 ; j2<_BOX_NBR_ ; j2++)
+            for(int j2=0 ; j2<_BOX_NBR_Y_ ; j2++)
             {
-                densityFile << i2*_L0_ << " " << j2*_L0_ << " " << rho_map[key(i2,j2,_BOX_NBR_/2,_BOX_NBR_)] << endl;
+                densityFile << i2*_L0_ << " " << j2*_L0_ << " " << rho_map[key2(i2,j2,_BOX_NBR_Z_/2)] << endl;
             }
             densityFile << endl;
         }
